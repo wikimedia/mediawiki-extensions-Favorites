@@ -1,7 +1,10 @@
 <?php
 
-class FavParser {
 
+
+class FavParser {
+	private $mTitle;
+	
 	function wfSpecialFavoritelist($argv, $parser) {
 
 		$output = '';
@@ -15,6 +18,7 @@ class FavParser {
 			$user = User::newFromName( $rootPart, true /* don't allow IP users*/ );
 			//echo "Userpage: $user";
 			$output = $this->viewFavList($user, $output);
+			
 			$output .= $this->editlink($argv);
 			return $output ;
 		} else {
@@ -60,7 +64,7 @@ class FavParser {
 			$output = "<div id='contentSub'><br>" . 
 				Linker::link(
 					SpecialPage::getTitleFor( 'Favoritelist', 'edit' ),
-					wfMsgHtml( "favoritelisttools-edit" ),
+					wfMessage( "favoritelisttools-edit" )->escaped(),
 					array(),
 					array(),
 					array( 'known', 'noclasses' )

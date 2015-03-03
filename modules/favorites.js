@@ -17,7 +17,9 @@
 			uselang: mw.config.get( 'wgUserLanguage' )
 		};
 		function ok( data ) {
-			success( data.favorite );
+			// this doesn't appear to be needed, and it breaks 1.23.
+			//success( data.favorite ); 
+			
 		}
 		if ( addParams ) {
 			$.extend( params, addParams );
