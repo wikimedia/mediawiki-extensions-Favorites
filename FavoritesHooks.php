@@ -40,7 +40,7 @@ class FavoritesHooks {
 		return true;
 	}
 
-	function renderFavorites( $input, $argv, $parser ) {
+	public static function renderFavorites( $input, $argv, $parser ) {
 		# The parser function itself
 		# The input parameters are wikitext with templates expanded
 		# The output should be wikitext too
@@ -97,7 +97,7 @@ class FavoritesHooks {
 			$url[] = array_shift( $personal_urls );
 			$url[] = array_shift( $personal_urls );
 	
-			$url[] = array( 'text' => wfMsg( 'myfavoritelist' ),
+			$url[] = array( 'text' => wfMessage( 'myfavoritelist' )->text(),
 					'href' => SpecialPage::getTitleFor( 'Favoritelist' )->getLocalURL() );
 			$personal_urls = $url + $personal_urls;
 		}
