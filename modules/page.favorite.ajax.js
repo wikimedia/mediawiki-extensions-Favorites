@@ -44,7 +44,6 @@
 			.attr( 'href', mw.util.wikiScript() + '?' + $.param( {
 					title: title,
 					action: action
-					//token: mw.user.tokens.get( 'favorite' )
 				} )
 			);
 
