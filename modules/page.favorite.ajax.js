@@ -5,7 +5,7 @@
 ( function ( mw, $ ) {
 	
 	// The name of the page to favorite or unfavorite.
-	var title = mw.config.get( 'wgRelevantPageName' );
+	var title = mw.config.get( 'wgRelevantPageName', mw.config.get( 'wgPageName' ) );
 
 	/**
 	 * Update the link text, link href attribute and (if applicable)
@@ -16,7 +16,7 @@
 	 * @param state {String} [optional] 'idle' or 'loading'. Default is 'idle'.
 	 */
 	function updateFavoriteLink( $link, action, state ) {
-		var msgKey, $li, otherAction;
+		var accesskeyTip, msgKey, $li, otherAction;
 
 		// A valid but empty jQuery object shouldn't throw a TypeError
 		if ( !$link.length ) {
@@ -39,8 +39,9 @@
 
 		$link
 			.text( mw.msg( msgKey ) )
-			.attr( 'title', mw.msg( 'tooltip-ca-' + action ) )
-			.updateTooltipAccessKeys()
+			.attr( 'title', mw.msg( 'tooltip-ca-' + action )  +
+                    ( accesskeyTip ? ' ' + accesskeyTip[0] : '' )
+			)
 			.attr( 'href', mw.util.wikiScript() + '?' + $.param( {
 					title: title,
 					action: action
