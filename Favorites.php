@@ -81,6 +81,7 @@ $wgExtensionMessagesFiles['MyExtensionAlias'] = __DIR__ . '/SpecialFavorites.ali
 $wgAutoloadClasses['Favorites'] = $dir . 'Favorites_body.php';
 $wgAutoloadClasses['FavoriteAction'] = $dir . 'FavoritesActions.php';
 $wgAutoloadClasses['SpecialFavoritelist'] = $dir . 'SpecialFavoritelist.php';
+$wgAutoloadClasses['ViewFavorites'] = $dir . 'SpecialFavoritelist.php';
 $wgAutoloadClasses['FavoritelistEditor'] = $dir . 'FavoritelistEditor.php';
 $wgAutoloadClasses['FavParser'] =  $dir . 'FavParser.php';
 $wgAutoloadClasses['FavoritesHooks'] = $dir . 'FavoritesHooks.php';
