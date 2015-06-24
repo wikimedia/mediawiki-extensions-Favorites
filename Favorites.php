@@ -106,7 +106,6 @@ $wgHooks['LoadExtensionSchemaUpdates'][] = 'FavoritesHooks::onLoadExtensionSchem
 
 // Special Page
 $wgSpecialPages['Favoritelist'] = 'SpecialFavoritelist';
-$wgSpecialPageGroups['Favoritelist'] = 'other';
 
 
 $wgFavoritesPersonalURL = false;

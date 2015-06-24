@@ -24,6 +24,10 @@ class SpecialFavoritelist extends SpecialPage {
 		
 		$vwfav->wfSpecialFavoritelist ( $par );
 	}
+
+	protected function getGroupName() {
+		return 'other';
+	}
 }
 
 class ViewFavorites {
