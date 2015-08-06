@@ -305,7 +305,7 @@ class FavoritelistEditor {
 					)
 				) ;
 				$article = new Article($title);
-				wfRunHooks('UnfavoriteArticleComplete',array(&$user,&$article));
+				Hooks::run('UnfavoriteArticleComplete',array(&$user,&$article));
 			}
 		}
 	}

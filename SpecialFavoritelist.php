@@ -282,7 +282,7 @@ class ViewFavorites {
 						'fl_title' => $title->getDBkey () 
 				), __METHOD__ );
 				$article = new Article ( $title );
-				wfRunHooks ( 'UnfavoriteArticleComplete', array (
+				Hooks::run ( 'UnfavoriteArticleComplete', array (
 						&$user,
 						&$article 
 				) );
