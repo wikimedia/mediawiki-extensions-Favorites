@@ -322,7 +322,7 @@ class FavoritelistEditor {
 			$self = SpecialPage::getTitleFor( 'Favoritelist' );
 			$form  = Xml::openElement( 'form', array( 'method' => 'post',
 				'action' => $self->getLocalUrl( array( 'action' => 'edit' ) ) ) );
-			$form .= Html::hidden( 'token', $user->editToken( 'favoritelistedit' ) );
+			$form .= Html::hidden( 'token', $user->getEditToken( 'favoritelistedit' ) );
 			$form .= "<fieldset>\n<legend>" . wfMessage( 'favoritelistedit-normal-legend' )->text() . "</legend>";
 			$form .= wfMessage( 'favoritelistedit-normal-explain' )->parse();
 			$form .= $this->buildRemoveList( $user, $user->getSkin() );
@@ -438,7 +438,7 @@ class FavoritelistEditor {
 		$self = SpecialPage::getTitleFor( 'Favoritelist' );
 		$form  = Xml::openElement( 'form', array( 'method' => 'post',
 			'action' => $self->getLocalUrl( array( 'action' => 'raw' ) ) ) );
-		$form .= Html::hidden( 'token', $user->editToken( 'favoritelistedit' ) );
+		$form .= Html::hidden( 'token', $user->getEditToken( 'favoritelistedit' ) );
 		$form .= '<fieldset><legend>' . wfMessage( 'favoritelistedit-raw-legend' )->text() . '</legend>';
 		$form .= wfMessage( 'favoritelistedit-raw-explain' )->parse();
 		$form .= Xml::label( wfMessage( 'favoritelistedit-raw-titles' ), 'titles' );

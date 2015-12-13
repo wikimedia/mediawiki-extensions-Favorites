@@ -125,7 +125,7 @@ class ApiFavorite extends ApiBase {
 	public static function getTokenFav() {
 		global $wgUser;
 
-		return $wgUser->editToken( 'favorite' );
+		return $wgUser->getEditToken( 'favorite' );
 	}
 	public static function getTokenUnfav() {
 		global $wgUser;
