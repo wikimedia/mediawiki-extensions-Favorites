@@ -48,17 +48,17 @@ class FavoritelistEditor {
 							$output->addHTML( wfMessage( 'favoritelistedit-raw-done' )->parse() );
 						if( ( $count = count( $toFavorite ) ) > 0 ) {
 							$output->addHTML( wfMessage( 'favoritelistedit-raw-added', $count )->parse() );
-							$this->showTitles( $toFavorite, $output, $user->getSkin() );
+							$this->showTitles( $toFavorite, $output, $output->getSkin() );
 						}
 						if( ( $count = count( $toUnfavorite ) ) > 0 ) {
 							$output->addHTML( wfMessage( 'favoritelistedit-raw-removed', $count )->parse() );
-							$this->showTitles( $toUnfavorite, $output, $user->getSkin() );
+							$this->showTitles( $toUnfavorite, $output, $output->getSkin() );
 						}
 					} else {
 						$this->clearFavoritelist( $user );
 						$user->invalidateCache();
 						$output->addHTML( wfMessage( 'favoritelistedit-raw-removed', count( $current ) )->parse() );
-						$this->showTitles( $current, $output, $user->getSkin() );
+						$this->showTitles( $current, $output, $output->getSkin() );
 					}
 				}
 				$this->showRawForm( $output, $user );
@@ -71,7 +71,7 @@ class FavoritelistEditor {
 					$user->invalidateCache();
 					$output->addHTML( wfMessage( 'favoritelistedit-normal-done',
 						$GLOBALS['wgLang']->formatNum( count( $titles ) ) )->parse() );
-					$this->showTitles( $titles, $output, $user->getSkin() );
+					$this->showTitles( $titles, $output, $output->getSkin() );
 				}
 				$this->showNormalForm( $output, $user );
 		}
@@ -317,15 +317,14 @@ class FavoritelistEditor {
 	 * @param $user User
 	 */
 	private function showNormalForm( $output, $user ) {
-		
-		if( ( $count = $this->showItemCount( $output, $user ) ) > 0 ) {
+		if( $this->showItemCount( $output, $user ) > 0 ) {
 			$self = SpecialPage::getTitleFor( 'Favoritelist' );
 			$form  = Xml::openElement( 'form', array( 'method' => 'post',
 				'action' => $self->getLocalUrl( array( 'action' => 'edit' ) ) ) );
 			$form .= Html::hidden( 'token', $user->getEditToken( 'favoritelistedit' ) );
 			$form .= "<fieldset>\n<legend>" . wfMessage( 'favoritelistedit-normal-legend' )->text() . "</legend>";
 			$form .= wfMessage( 'favoritelistedit-normal-explain' )->parse();
-			$form .= $this->buildRemoveList( $user, $user->getSkin() );
+			$form .= $this->buildRemoveList( $user, $output->getSkin() );
 			$form .= '<p>' . Xml::submitButton( wfMessage( 'favoritelistedit-normal-submit' ) ) . '</p>';
 			$form .= '</fieldset></form>';
 			$output->addHTML( $form );
