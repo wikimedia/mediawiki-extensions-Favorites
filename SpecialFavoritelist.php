@@ -307,10 +307,7 @@ class ViewFavorites {
 					) ) 
 			) );
 			$form .= Html::hidden ( 'token', $this->user->getEditToken ( 'favorite' ) );
-			// $form .= "<fieldset>\n<legend>" . wfMsgHtml( 'favoritelistedit-normal-legend' ) . "</legend>";
-			// $form .= wfMsgExt( 'favoritelistedit-normal-explain', 'parse' );
 			$form .= $this->buildRemoveList ( $user, $this->user->getSkin () );
-			// $form .= '<p>' . Xml::submitButton( wfMsg( 'favoritelistedit-normal-submit' ) ) . '</p>';
 			$form .= '</fieldset></form>';
 			$output->addHTML ( $form );
 		}

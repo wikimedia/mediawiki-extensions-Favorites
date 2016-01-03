@@ -29,11 +29,11 @@ class FavParser {
 		if( $user->isAnon() ) {
 			$llink = Linker::linkKnown(
 				SpecialPage::getTitleFor( 'Userlogin' ), 
-				wfMsg( 'loginreqlink' ),
+				wfMessage( 'loginreqlink' )->text(),
 				array(),
 				array( 'returnto' => $specialTitle->getPrefixedText() )
 			);
-			$output = wfMsgHtml( 'favoritelistanontext', $llink ) ;
+			$output = wfMessage( 'favoritelistanontext' )->rawParams( $llink )->escaped();
 			return $output ;
 			
 		}
@@ -142,7 +142,7 @@ class FavParser {
 			$output .=  $form ;
 			return $output;
 		} else {
-			$output = wfmsg('nofavoritelist');
+			$output = $this->msg('nofavoritelist')->text();
 			return $output;
 		}
 	}
