@@ -89,7 +89,7 @@ class FavoritesHooks {
 		return true;
 	}
 	
-	public static function onPersonalUrls( &$personal_urls, &$wgTitle ) {
+	public static function onPersonalUrls( &$personal_urls, &$title ) {
 		global $wgFavoritesPersonalURL, $wgUser;
 	
 		if ( $wgFavoritesPersonalURL && $wgUser->isLoggedIn() ) {
