@@ -21,7 +21,7 @@ class ApiFavorite extends ApiBase {
 		if ( !$user->isLoggedIn() ) {
 			$this->dieUsage( 'You must be logged-in to have a favoritelist', 'notloggedin' );
 		}
-		
+
 		$params = $this->extractRequestParams();
 		$title = Title::newFromText( $params['title'] );
 
@@ -56,7 +56,7 @@ class ApiFavorite extends ApiBase {
 	public function isWriteMode() {
 		return true;
 	}
-	
+
 	// since this makes changes the database, we should use this, but I just can't get it to work.
  	//public function needsToken() {
  	//	return 'favorite';
@@ -88,17 +88,6 @@ class ApiFavorite extends ApiBase {
 		);
 	}
 
-	public function getResultProperties() {
-		return array(
-			'' => array(
-				'title' => 'string',
-				'unfavorited' => 'boolean',
-				'favorited' => 'boolean',
-				'message' => 'string'
-			)
-		);
-	}
-
 	public function getDescription() {
 		return 'Add or remove a page from/to the current user\'s favoritelist';
 	}
@@ -121,7 +110,7 @@ class ApiFavorite extends ApiBase {
 	public function getHelpUrls() {
 		return 'https://www.mediawiki.org/wiki/API:Favorite';
 	}
-	
+
 	public static function getTokenFav() {
 		global $wgUser;
 
@@ -138,7 +127,7 @@ class ApiFavorite extends ApiBase {
 		$list['unfavorite'] = array( __CLASS__, 'getTokenUnfav' );
 		return true; // Hooks must return bool
 	}
-	
+
 	public function getVersion() {
 		return __CLASS__ . ': $Id$';
 	}
