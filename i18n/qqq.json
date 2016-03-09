@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"apihelp-favorite-description": "{{doc-apihelp-description|favorite}}",
+	"apihelp-favorite-param-title": "{{doc-apihelp-param|favorite|title}}",
+	"apihelp-favorite-param-unfavorite": "{{doc-apihelp-param|favorite|unfavorite}}",
+	"apihelp-favorite-param-token": "{{doc-apihelp-param|favorite|token}}"
+}
