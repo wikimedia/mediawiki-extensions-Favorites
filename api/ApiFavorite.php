@@ -92,14 +92,6 @@ class ApiFavorite extends ApiBase {
 		return 'Add or remove a page from/to the current user\'s favoritelist';
 	}
 
-	public function getPossibleErrors() {
-		return array_merge( parent::getPossibleErrors(), array(
-			array( 'code' => 'notloggedin', 'info' => 'You must be logged-in to have a favoritelist' ),
-			array( 'invalidtitle', 'title' ),
-			array( 'hookaborted' ),
-		) );
-	}
-
 	public function getExamples() {
 		return array(
 			'api.php?action=favorite&title=Main_Page' => 'Favorite the page "Main Page"',
