@@ -66,7 +66,7 @@ class FavoritesHooks {
 		return true;
 	}
 	
-	public static function onTitleMoveComplete( &$title, &$nt, &$user, $pageid, $redirid ) {
+	public static function onTitleMoveComplete( &$title, &$nt, $user, $pageid, $redirid ) {
 		# Update watchlists
 		$oldnamespace = $title->getNamespace() & ~1;
 		$newnamespace = $nt->getNamespace() & ~1;

@@ -91,7 +91,7 @@ class ViewFavorites {
 		$this->out->setPageTitle ( wfMessage ( 'favoritelist' ) );
 		
 		$sub = wfMessage ( 'favoritelistfor', $this->user->getName () )->parse ();
-		$sub .= '<br />' . FavoritelistEditor::buildTools ( $this->user->getSkin () );
+		$sub .= '<br />' . FavoritelistEditor::buildTools ();
 		$this->out->setSubtitle ( $sub );
 		
 		if (($mode = FavoritelistEditor::getMode ( $this->request, $par )) !== false) {
@@ -112,7 +112,7 @@ class ViewFavorites {
 			$this->unfavoriteTitles ( $titles, $user );
 			$user->invalidateCache ();
 			$output->addHTML ( wfMessage ( 'favoritelistedit-normal-done', $GLOBALS ['wgLang']->formatNum ( count ( $titles ) ) )->parse () );
-			$this->showTitles ( $titles, $output, $this->user->getSkin () );
+			$this->showTitles ( $titles, $output );
 		}
 		$this->showNormalForm ( $output, $user );
 		
@@ -307,7 +307,7 @@ class ViewFavorites {
 					) ) 
 			) );
 			$form .= Html::hidden ( 'token', $this->user->getEditToken ( 'favorite' ) );
-			$form .= $this->buildRemoveList ( $user, $this->user->getSkin () );
+			$form .= $this->buildRemoveList ( $user );
 			$form .= '</fieldset></form>';
 			$output->addHTML ( $form );
 		}

@@ -142,7 +142,7 @@ class FavParser {
 			$output .=  $form ;
 			return $output;
 		} else {
-			$output = $this->msg('nofavoritelist')->text();
+			$output = wfMessage('nofavoritelist')->text();
 			return $output;
 		}
 	}
