@@ -93,13 +93,9 @@ class FavoritesHooks {
 		global $wgFavoritesPersonalURL, $wgUser;
 	
 		if ( $wgFavoritesPersonalURL && $wgUser->isLoggedIn() ) {
-			$url['userpage'] = array_shift( $personal_urls );
-			$url[] = array_shift( $personal_urls );
-			$url[] = array_shift( $personal_urls );
-	
 			$url[] = array( 'text' => wfMessage( 'myfavoritelist' )->text(),
 					'href' => SpecialPage::getTitleFor( 'Favoritelist' )->getLocalURL() );
-			$personal_urls = $url + $personal_urls;
+			$personal_urls = wfArrayInsertAfter( $personal_urls, $url, 'watchlist' );
 		}
 	
 		return true;
