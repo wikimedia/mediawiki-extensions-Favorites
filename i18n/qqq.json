@@ -2,7 +2,7 @@
 	"@metadata": {
 		"authors": ["James Martindale"]
 	},
-	"favorites-desc": "Extension description used for Special:Version",
+	"favorites-desc": "{{desc|name=Favorites|url=https://www.mediawiki.org/wiki/Extension:Favorites}}",
 	"favoritethis": "Unused",
 	"prefs-favoritelist": "Unused",
 	"prefs-favoritelist-token": "Unused",
