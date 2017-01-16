@@ -443,7 +443,7 @@ class FavoritelistEditor {
 		$form .= Xml::label( wfMessage( 'favoritelistedit-raw-titles' ), 'titles' );
 		$form .= "<br />\n";
 		$form .= Xml::openElement( 'textarea', array( 'id' => 'titles', 'name' => 'titles',
-			'rows' => $user->getIntOption( 'rows' ), 'cols' => $user->getIntOption( 'cols' ) ) );
+			'rows' => 25, 'cols' => 80 ) );
 		$titles = $this->getFavoritelist( $user );
 		foreach( $titles as $title )
 			$form .= htmlspecialchars( $title ) . "\n";
