@@ -49,6 +49,7 @@
 	"favoritelisttools-edit": "View and edit favorites page listing on favorites special pages",
 	"favoritelisttools-raw": "Edit raw favorites list page listing on favorites special pages",
 	"apihelp-favorite-description": "{{doc-apihelp-description|favorite}}",
+	"apihelp-favorite-summary": "{{doc-apihelp-summary|favorite}}",
 	"apihelp-favorite-param-title": "{{doc-apihelp-param|favorite|title}}",
 	"apihelp-favorite-param-unfavorite": "{{doc-apihelp-param|favorite|unfavorite}}",
 	"apihelp-favorite-param-token": "{{doc-apihelp-param|favorite|token}}"

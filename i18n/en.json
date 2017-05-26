@@ -49,6 +49,7 @@
 	"favoritelisttools-edit": "View and edit favorites",
 	"favoritelisttools-raw": "Edit raw favorites",
 	"apihelp-favorite-description": "Add or remove a page from/to the current user's favorite list",
+	"apihelp-favorite-summary": "Add or remove a page from/to the current user's favorite list",
 	"apihelp-favorite-param-title": "The page to (un)favorite",
 	"apihelp-favorite-param-unfavorite": "If set the page will be unfavorited rather than favorited",
 	"apihelp-favorite-param-token": "A token previously acquired via <kbd>prop=info</kbd>"
