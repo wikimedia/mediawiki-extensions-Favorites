@@ -1,10 +1,5 @@
 <?php
 
-if ( !defined( 'MEDIAWIKI' ) ) {
-	// Eclipse helper - will be ignored in production
-	require_once ( 'ApiBase.php' );
-}
-
 /**
  * API module to allow users to favorite a page
  *
