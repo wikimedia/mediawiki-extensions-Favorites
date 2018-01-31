@@ -26,8 +26,7 @@ class FavoritelistEditor {
 	public function execute( $user, $output, $request, $mode ) {
 		
 		if( wfReadOnly() ) {
-			$output->readOnlyPage();
-			return;
+			throw new ReadOnlyError;
 		}
 		switch( $mode ) {
 			case self::EDIT_CLEAR:
