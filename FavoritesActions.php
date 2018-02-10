@@ -39,7 +39,6 @@ class FavoriteAction {
 	
 	function doFavorite( Title $title, User $user  ) {
 		$success = false;
-		wfProfileIn( __METHOD__ );
 		$dbw = wfGetDB( DB_MASTER );
 		$dbw->insert( 'favoritelist',
 				array(
@@ -49,7 +48,6 @@ class FavoriteAction {
 						'fl_notificationtimestamp' => null
 				), __METHOD__, 'IGNORE' );
 		
-		wfProfileOut( __METHOD__ );
 			if ( $dbw->affectedRows() > 0 ) {
 			$success = true;
 		}
