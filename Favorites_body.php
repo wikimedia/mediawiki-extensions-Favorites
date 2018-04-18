@@ -2,7 +2,7 @@
 class Favorites {
 	var $user;
 	function favoritesLinks(&$sktemplate, &$links) {
-		global $wgUseIconFavorite, $wgUseAjax, $wgEnableAPI, $wgEnableWriteAPI;
+		global $wgUseIconFavorite;
 		// $context = $sktemplate->getContext();
 		// $wgUseIconFavorite = true;
 		$this->user = $user = $sktemplate->getUser ();
