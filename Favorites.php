@@ -43,6 +43,7 @@ $wgResourceModules['ext.favorites'] = array(
 		'scripts' => array('/modules/page.favorite.ajax.js','/modules/favorites.js'),
 		'dependencies' => array(
 				'mediawiki.api',
+				'mediawiki.RegExp',
 		'user.tokens'),
 		'localBasePath' => __DIR__,
 		'remoteExtPath' => 'Favorites',
