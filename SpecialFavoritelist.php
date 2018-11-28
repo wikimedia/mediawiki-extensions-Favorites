@@ -11,17 +11,17 @@
  *        	passed to the page
  */
 class SpecialFavoritelist extends SpecialPage {
-	
+
 	function __construct() {
 		parent::__construct ( 'Favoritelist' );
 	}
 	function execute($par) {
 		$context = $this->getContext();
 		$vwfav = new ViewFavorites ($context);
-		
+
 		$this->setHeaders ();
 		$param = $this->getRequest()->getText ( 'param' );
-		
+
 		$vwfav->wfSpecialFavoritelist ( $par );
 	}
 
@@ -31,14 +31,14 @@ class SpecialFavoritelist extends SpecialPage {
 }
 
 class ViewFavorites {
-	
+
 	private $context;
 	private $user;
 	private $out;
 	private $request;
 	private $lang;
-	
-	
+
+
 	function __construct($context) {
 		$this->context = $context;
 		$this->out = $this->context->getOutput();
@@ -46,11 +46,11 @@ class ViewFavorites {
 		$this->lang = $this->context->getLanguage();
 		$this->user = $this->context->getUser();
 	}
-	
+
 	function wfSpecialFavoritelist($par) {
-		
+
 		global $wgFeedClasses;
-		
+
 		// Add feed links
 		$flToken = $this->user->getOption ( 'favoritelisttoken' );
 		if (! $flToken) {
@@ -58,55 +58,55 @@ class ViewFavorites {
 			$this->user->setOption ( 'favoritelisttoken', $flToken );
 			$this->user->saveSettings ();
 		}
-		
+
 		$apiParams = array (
 				'action' => 'feedfavoritelist',
 				'allrev' => 'allrev',
 				'flowner' => $this->user->getName (),
-				'fltoken' => $flToken 
+				'fltoken' => $flToken
 		);
 		$feedTemplate = wfScript ( 'api' ) . '?';
-		
+
 		foreach ( $wgFeedClasses as $format => $class ) {
 			$theseParams = $apiParams + array (
-					'feedformat' => $format 
+					'feedformat' => $format
 			);
 			$url = $feedTemplate . wfArrayToCGI ( $theseParams );
 			$this->out->addFeedLink ( $format, $url );
 		}
-		
+
 		$specialTitle = SpecialPage::getTitleFor ( 'Favoritelist' );
 		$this->out->setRobotPolicy ( 'noindex,nofollow' );
-		
+
 		// Anons don't get a favoritelist
 		if ($this->user->isAnon ()) {
 			$this->out->setPageTitle ( wfMessage ( 'favoritenologin' ) );
 			$llink = Linker::linkKnown ( SpecialPage::getTitleFor ( 'Userlogin' ), wfMessage ( 'loginreqlink' )->text (), array (), array (
-					'returnto' => $specialTitle->getPrefixedText () 
+					'returnto' => $specialTitle->getPrefixedText ()
 			) );
 			$this->out->addHTML ( wfMessage ( 'favoritelistanontext', $llink )->text () );
 			return;
 		}
-		
+
 		$this->out->setPageTitle ( wfMessage ( 'favoritelist' ) );
-		
+
 		$sub = wfMessage ( 'favoritelistfor', $this->user->getName () )->parse ();
 		$sub .= '<br />' . FavoritelistEditor::buildTools ();
 		$this->out->setSubtitle ( $sub );
-		
+
 		if (($mode = FavoritelistEditor::getMode ( $this->request, $par )) !== false) {
 			$editor = new FavoritelistEditor ();
 			$editor->execute ( $this->user, $this->out, $this->request, $mode );
 			return;
 		}
-		
+
 		$this->viewFavList ( $this->user, $this->out, $this->request, $mode );
 	}
 	private function viewFavList($user, $output, $request, $mode) {
 
 		$uid = $this->user->getId ();
 		$output->setPageTitle ( wfMessage ( 'favoritelist' ) );
-		
+
 		if ($request->wasPosted () && $this->checkToken ( $request, $this->user )) {
 			$titles = $this->extractTitles ( $request->getArray ( 'titles' ) );
 			$this->unfavoriteTitles ( $titles, $user );
@@ -115,12 +115,12 @@ class ViewFavorites {
 			$this->showTitles ( $titles, $output );
 		}
 		$this->showNormalForm ( $output, $user );
-		
+
 		$dbr = wfGetDB ( DB_SLAVE, 'favoritelist' );
 		// $recentchanges = $dbr->tableName( 'recentchanges' );
-		
+
 		$favoritelistCount = $dbr->selectField ( 'favoritelist', 'COUNT(fl_user)', array (
-				'fl_user' => $uid 
+				'fl_user' => $uid
 		), __METHOD__ );
 		// Adjust for page X, talk:page X, which are both stored separately,
 		// but treated together
@@ -131,23 +131,23 @@ class ViewFavorites {
 			return;
 		}
 	}
-	
+
 	/**
 	 * Check the edit token from a form submission
 	 *
-	 * @param $request WebRequest        	
-	 * @param $user User        	
+	 * @param $request WebRequest
+	 * @param $user User
 	 * @return bool
 	 */
 	private function checkToken($request, $user) {
 		return $user->matchEditToken ( $request->getVal ( 'token' ), 'favorite' );
 	}
-	
+
 	/**
 	 * Extract a list of titles from a blob of text, returning
 	 * (prefixed) strings; unfavoritable titles are ignored
 	 *
-	 * @param $list mixed        	
+	 * @param $list mixed
 	 * @return array
 	 */
 	private function extractTitles($list) {
@@ -167,7 +167,7 @@ class ViewFavorites {
 		}
 		return array_unique ( $titles );
 	}
-	
+
 	/**
 	 * Print out a list of linked titles
 	 *
@@ -176,7 +176,7 @@ class ViewFavorites {
 	 *
 	 * @param $titles An
 	 *        	array of strings, or Title objects
-	 * @param $output OutputPage        	
+	 * @param $output OutputPage
 	 */
 	private function showTitles($titles, $output) {
 		$talk = wfMessage ( 'talkpagelinktext' )->text ();
@@ -186,8 +186,10 @@ class ViewFavorites {
 			if (! $title instanceof Title)
 				$title = Title::newFromText ( $title );
 			// if( $title instanceof Title ) {
-			// $batch->addObj( $title );
-			// $batch->addObj( $title->getTalkPage() );
+			// 	$batch->addObj( $title );
+			// 	if ( $title->canHaveTalkPage() ) {
+			// 		$batch->addObj( $title->getTalkPage() );
+			// 	}
 			// }
 		}
 		$batch->execute ();
@@ -197,34 +199,34 @@ class ViewFavorites {
 			if (! $title instanceof Title)
 				$title = Title::newFromText ( $title );
 			if ($title instanceof Title) {
-				$output->addHTML ( "<li>" . Linker::link ( $title ) . 
+				$output->addHTML ( "<li>" . Linker::link ( $title ) .
 				"</li>\n" );
 			}
 		}
 		$output->addHTML ( "</ul>\n" );
 	}
-	
+
 	/**
 	 * Count the number of titles on a user's favoritelist, excluding talk pages
 	 *
-	 * @param $user User        	
+	 * @param $user User
 	 * @return int
 	 */
 	private function countFavoritelist($user) {
 		$dbr = wfGetDB ( DB_MASTER );
 		$res = $dbr->select ( 'favoritelist', 'COUNT(fl_user) AS count', array (
-				'fl_user' => $user->getId () 
+				'fl_user' => $user->getId ()
 		), __METHOD__ );
 		$row = $dbr->fetchObject ( $res );
 		return ceil ( $row->count ); // Paranoia
 	}
-	
+
 	/**
 	 * Get a list of titles on a user's favoritelist, excluding talk pages,
 	 * and return as a two-dimensional array with namespace, title and
 	 * redirect status
 	 *
-	 * @param $user User        	
+	 * @param $user User
 	 * @return array
 	 */
 	private function getFavoritelistInfo($user) {
@@ -255,8 +257,8 @@ class ViewFavorites {
 		}
 		return $titles;
 	}
-	
-	
+
+
 	/**
 	 * Remove a list of titles from a user's favoritelist
 	 *
@@ -265,46 +267,46 @@ class ViewFavorites {
 	 *
 	 * @param $titles An
 	 *        	array of strings, or Title objects
-	 * @param $user User        	
+	 * @param $user User
 	 */
 	private function unfavoriteTitles($titles, $user) {
 		$dbw = wfGetDB ( DB_MASTER );
-		
+
 		foreach ( $titles as $title ) {
-			
+
 			if (! $title instanceof Title)
 				$title = Title::newFromText ( $title );
 			if ($title instanceof Title) {
-				
+
 				$dbw->delete ( 'favoritelist', array (
 						'fl_user' => $user->getId (),
 						'fl_namespace' => ($title->getNamespace () | 1),
-						'fl_title' => $title->getDBkey () 
+						'fl_title' => $title->getDBkey ()
 				), __METHOD__ );
 				$article = new Article ( $title );
 				Hooks::run ( 'UnfavoriteArticleComplete', array (
 						&$user,
-						&$article 
+						&$article
 				) );
 			}
 		}
 	}
-	
+
 	/**
 	 * Show the standard favoritelist editing form
 	 *
-	 * @param $output OutputPage        	
-	 * @param $user User        	
+	 * @param $output OutputPage
+	 * @param $user User
 	 */
 	private function showNormalForm($output, $user) {
-		
+
 		if (($count = $this->countFavoritelist ( $user )) > 0) {
 			$self = SpecialPage::getTitleFor ( 'Favoritelist' );
 			$form = Xml::openElement ( 'form', array (
 					'method' => 'post',
 					'action' => $self->getLocalUrl ( array (
-							'action' => 'edit' 
-					) ) 
+							'action' => 'edit'
+					) )
 			) );
 			$form .= Html::hidden ( 'token', $this->user->getEditToken ( 'favorite' ) );
 			$form .= $this->buildRemoveList ( $user );
@@ -312,14 +314,14 @@ class ViewFavorites {
 			$output->addHTML ( $form );
 		}
 	}
-	
+
 	/**
 	 * Build the part of the standard favoritelist editing form with the actual
 	 * title selection checkboxes and stuff.
 	 * Also generates a table of
 	 * contents if there's more than one heading.
 	 *
-	 * @param $user User        	
+	 * @param $user User
 	 */
 	private function buildRemoveList($user) {
 		$list = "";
@@ -329,10 +331,10 @@ class ViewFavorites {
 			$tocLength ++;
 			$heading = htmlspecialchars ( $this->getNamespaceHeading ( $namespace ) );
 			$anchor = "editfavoritelist-ns" . $namespace;
-			
+
 			$list .= Linker::makeHeadLine ( 2, ">", $anchor, $heading, "" );
 			$toc .= Linker::tocLine ( $anchor, $heading, $tocLength, 1 ) . Linker::tocLineEnd ();
-			
+
 			$list .= "<ul>\n";
 			foreach ( $pages as $dbkey => $redirect ) {
 				$title = Title::makeTitleSafe ( $namespace, $dbkey );
@@ -344,54 +346,56 @@ class ViewFavorites {
 		if ($tocLength > 10) {
 			$list = Linker::tocList ( $toc ) . $list;
 		}
-		
+
 		return $list;
 	}
-	
+
 	/**
 	 * Get the correct "heading" for a namespace
 	 *
-	 * @param $namespace int        	
+	 * @param $namespace int
 	 * @return string
 	 */
 	private function getNamespaceHeading($namespace) {
 		return $namespace == NS_MAIN ? wfMessage ( 'blanknamespace' )->text () : htmlspecialchars ( $GLOBALS ['wgContLang']->getFormattedNsText ( $namespace ) );
 	}
-	
+
 	/**
 	 * Build a single list item containing a check box selecting a title
 	 * and a link to that title, with various additional bits
 	 *
-	 * @param $title Title        	
-	 * @param $redirect bool        	
+	 * @param $title Title
+	 * @param $redirect bool
 	 * @return string
 	 */
 	private function buildRemoveLine($title, $redirect) {
-		
+
 		// In case the user adds something unusual to their list using the raw editor
 		// We moved the Tools array completely into the "if( $title->exists() )" section.
 		$showlinks = false;
 		$link = Linker::link ( $title );
 		if ($redirect)
 			$link = '<span class="favoritelistredir">' . $link . '</span>';
-		
+
 		if ($title->exists ()) {
 			$showlinks = true;
-			$tools [] = Linker::link ( $title->getTalkPage (), wfMessage ( 'talkpagelinktext' )->text () );
+			if ( $title->canHaveTalkPage() ) {
+				$tools [] = Linker::link ( $title->getTalkPage (), wfMessage ( 'talkpagelinktext' )->text () );
+			}
 			$tools [] = Linker::link ( $title, wfMessage ( 'history_short' )->text (), array (), array (
-					'action' => 'history' 
+					'action' => 'history'
 			), array (
 					'known',
-					'noclasses' 
+					'noclasses'
 			) );
 		}
 		if ($title->getNamespace () == NS_USER && ! $title->isSubpage ()) {
 			$tools [] = Linker::link ( SpecialPage::getTitleFor ( 'Contributions', $title->getText () ), wfMessage ( 'contributions' )->text (), array (), array (), array (
 					'known',
-					'noclasses' 
+					'noclasses'
 			) );
 		}
-		
+
 		if ($showlinks) {
 			return "<li>" . $link . " (" . $this->lang->pipeList ( $tools ) . ")" . "</li>\n";
 		} else {

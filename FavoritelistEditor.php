@@ -24,7 +24,7 @@ class FavoritelistEditor {
 	 * @param $mode int
 	 */
 	public function execute( $user, $output, $request, $mode ) {
-		
+
 		if( wfReadOnly() ) {
 			throw new ReadOnlyError;
 		}
@@ -130,7 +130,9 @@ class FavoritelistEditor {
 				$title = Title::newFromText( $title );
 			if( $title instanceof Title ) {
 				$batch->addObj( $title );
-				//$batch->addObj( $title->getTalkPage() );
+				// if ( $title->canHaveTalkPage() ) {
+				// 	$batch->addObj( $title->getTalkPage() );
+				// }
 			}
 		}
 		$batch->execute();
@@ -156,7 +158,7 @@ class FavoritelistEditor {
 		$dbr = wfGetDB( DB_MASTER );
 		$res = $dbr->select( 'favoritelist', 'COUNT(*) AS count', array( 'fl_user' => $user->getId() ), __METHOD__ );
 		$row = $dbr->fetchObject( $res );
-		return ceil( $row->count); 
+		return ceil( $row->count);
 	}
 
 	/**
@@ -387,13 +389,15 @@ class FavoritelistEditor {
 		global $wgLang;
 		# In case the user adds something unusual to their list using the raw editor
 		# We moved the Tools array completely into the "if( $title->exists() )" section.
-		$showlinks=false; 
+		$showlinks=false;
 		$link = Linker::link( $title );
 		if( $redirect )
 			$link = '<span class="favoritelistredir">' . $link . '</span>';
 		if( $title->exists() ) {
 			$showlinks = true;
-			//$tools[] = Linker::link( $title->getTalkPage(), wfMessage( 'talkpagelinktext' )->text() );
+			// if ( $title->canHaveTalkPage() ) {
+			// 	$tools[] = Linker::link( $title->getTalkPage(), wfMessage( 'talkpagelinktext' )->text() );
+		 	// }
 			$tools[] = Linker::link(
 				$title,
 				wfMessage( 'history_short' )->text(),
@@ -411,17 +415,17 @@ class FavoritelistEditor {
 				array( 'known', 'noclasses' )
 			);
 		}
-		
+
 		if ($showlinks) {
-		return 
+		return
 			Xml::check( 'titles[]', false, array( 'value' => $title->getPrefixedText() ) )
 			. $link . " (" . $wgLang->pipeList( $tools ) . ")" . "\n<br>";
 		} else {
-			return 
-			Xml::check( 'titles[]', false, array( 'value' => $title->getPrefixedText() ) ) 
+			return
+			Xml::check( 'titles[]', false, array( 'value' => $title->getPrefixedText() ) )
 			. $link . "\n<br>";
 		}
-		
+
 		}
 
 	/**
@@ -431,7 +435,7 @@ class FavoritelistEditor {
 	 * @param $user User
 	 */
 	public function showRawForm( $output, $user ) {
-		
+
 		$this->showItemCount( $output, $user );
 		$self = SpecialPage::getTitleFor( 'Favoritelist' );
 		$form  = Xml::openElement( 'form', array( 'method' => 'post',
