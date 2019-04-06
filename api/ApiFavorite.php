@@ -114,8 +114,4 @@ class ApiFavorite extends ApiBase {
 		$list['unfavorite'] = array( __CLASS__, 'getTokenUnfav' );
 		return true; // Hooks must return bool
 	}
-
-	public function getVersion() {
-		return __CLASS__ . ': $Id$';
-	}
 }
