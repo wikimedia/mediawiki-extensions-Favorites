@@ -116,7 +116,7 @@ class ViewFavorites {
 		}
 		$this->showNormalForm ( $output, $user );
 
-		$dbr = wfGetDB ( DB_SLAVE, 'favoritelist' );
+		$dbr = wfGetDB ( DB_REPLICA, 'favoritelist' );
 		// $recentchanges = $dbr->tableName( 'recentchanges' );
 
 		$favoritelistCount = $dbr->selectField ( 'favoritelist', 'COUNT(fl_user)', array (

@@ -65,7 +65,7 @@ class Favorites {
 	 * Is this item in the user's favorite list?
 	 */
 	private function inFavorites($ns, $titleKey) {
-		$dbr = wfGetDB ( DB_SLAVE );
+		$dbr = wfGetDB ( DB_REPLICA );
 		$res = $dbr->select ( 'favoritelist', 1, array (
 				'fl_user' => $this->user->getId (),
 				'fl_namespace' => $ns,
