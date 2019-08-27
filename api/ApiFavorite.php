@@ -95,7 +95,7 @@ class ApiFavorite extends ApiBase {
 	}
 
 	public function getHelpUrls() {
-		return 'https://www.mediawiki.org/wiki/API:Favorite';
+		return 'https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:Favorites';
 	}
 
 	public static function getTokenFav() {
