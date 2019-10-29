@@ -81,7 +81,7 @@
 			if ( actionPaths.hasOwnProperty( key ) ) {
 				parts = actionPaths[key].split( '$1' );
 				for ( i = 0; i < parts.length; i++ ) {
-					parts[i] = mw.RegExp.escape( parts[i] );
+					parts[i] = mw.util.escapeRegExp( parts[i] );
 				}
 				m = new RegExp( parts.join( '(.+)' ) ).exec( url );
 				if ( m && m[1] ) {
