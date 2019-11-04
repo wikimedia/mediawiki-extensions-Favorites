@@ -31,7 +31,7 @@ class FavoritesHooks {
 
 		$favParse = new FavParser();
 		$output = $favParse->wfSpecialFavoritelist( $argv, $parser );
-		$parser->disableCache();
+		$parser->getOutput()->updateCacheExpiry( 0 );
 		return $output;
 	}
 
