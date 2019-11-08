@@ -5,7 +5,7 @@ class FavoritesHooks {
 
 		$favClass = new Favorites;
 		$favClass->favoritesLinks($sktemplate, $links);
-		//if ( $wgUseAjax && $wgEnableAPI && $wgEnableWriteAPI && $user->isAllowed( 'writeapi' )) {
+		//if ( $user->isAllowed( 'writeapi' ) ) {
 		//$sktemplate->getOutput()->addModules( 'ext.favorites' );
 		//}
 
