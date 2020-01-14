@@ -97,21 +97,4 @@ class ApiFavorite extends ApiBase {
 	public function getHelpUrls() {
 		return 'https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:Favorites';
 	}
-
-	public static function getTokenFav() {
-		global $wgUser;
-
-		return $wgUser->getEditToken( 'favorite' );
-	}
-	public static function getTokenUnfav() {
-		global $wgUser;
-
-		return $wgUser->getEditToken( 'unfavorite' );
-	}
-
-	public static function injectTokenFunction( &$list ) {
-		$list['favorite'] = array( __CLASS__, 'getTokenFav' );
-		$list['unfavorite'] = array( __CLASS__, 'getTokenUnfav' );
-		return true; // Hooks must return bool
-	}
 }
