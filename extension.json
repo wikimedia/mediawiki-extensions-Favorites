@@ -19,12 +19,18 @@
 			"i18n"
 		]
 	},
+	"Actions": {
+		"favorite": "FavoriteAction",
+		"unfavorite": "UnfavoriteAction"
+	},
 	"ExtensionMessagesFiles": {
-		"MyExtensionAlias": "SpecialFavorites.alias.php"
+		"FavoritesAlias": "SpecialFavorites.alias.php"
 	},
 	"AutoloadClasses": {
 		"Favorites": "includes/Favorites_body.php",
-		"FavoriteAction": "includes/FavoritesActions.php",
+		"BaseAction": "includes/BaseAction.php",
+		"FavoriteAction": "includes/FavoriteAction.php",
+		"UnfavoriteAction": "includes/UnfavoriteAction.php",
 		"SpecialFavoritelist": "specials/SpecialFavoritelist.php",
 		"ViewFavorites": "specials/SpecialFavoritelist.php",
 		"FavoritelistEditor": "includes/FavoritelistEditor.php",

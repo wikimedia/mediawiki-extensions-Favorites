@@ -29,12 +29,12 @@ class ApiFavorite extends ApiBase {
 		if ( $params['unfavorite'] ) {
 			$res['unfavorited'] = '';
 			$res['message'] = $this->msg( 'removedfavoritetext', $title->getPrefixedText() )->title( $title )->parseAsBlock();
-			$success = new FavoriteAction('unfavorite',$title);
+			$success = false;
 			//$success = UnfavoriteAction::doUnfavorite( $title, $user );
 		} else {
 			$res['favorited'] = '';
 			$res['message'] = $this->msg( 'addedfavoritetext', $title->getPrefixedText() )->title( $title )->parseAsBlock();
-			$success = new FavoriteAction('favorite',$title);
+			$success = false;
 			//$success = FavAction::doFavorite( $title, $user );
 		}
 		if ( !$success ) {
