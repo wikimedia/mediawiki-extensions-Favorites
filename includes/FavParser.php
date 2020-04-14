@@ -1,6 +1,6 @@
 <?php
 
-
+use MediaWiki\MediaWikiServices;
 
 class FavParser {
 	private $mTitle;
@@ -109,7 +109,7 @@ class FavParser {
 			AND fl_title = page_title ) WHERE fl_user = {$uid}";
 		$res = $dbr->query( $sql, __METHOD__ );
 		if( $res && $dbr->numRows( $res ) > 0 ) {
-			$cache = LinkCache::singleton();
+			$cache = MediaWikiServices::getInstance()->getLinkCache();
 			while( $row = $dbr->fetchObject( $res ) ) {
 				$title = Title::makeTitleSafe( $row->fl_namespace, $row->fl_title );
 				if( $title instanceof Title ) {

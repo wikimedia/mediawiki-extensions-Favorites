@@ -1,5 +1,7 @@
 <?php
 
+use MediaWiki\MediaWikiServices;
+
 /**
  * Provides the UI through which users can perform editing
  * operations on their favoritelist
@@ -208,7 +210,7 @@ class FavoritelistEditor {
 			AND fl_title = page_title ) WHERE fl_user = {$uid}";
 		$res = $dbr->query( $sql, __METHOD__ );
 		if( $res && $dbr->numRows( $res ) > 0 ) {
-			$cache = LinkCache::singleton();
+			$cache = MediaWikiServices::getInstance()->getLinkCache();
 			while( $row = $dbr->fetchObject( $res ) ) {
 				$title = Title::makeTitleSafe( $row->fl_namespace, $row->fl_title );
 				if( $title instanceof Title ) {
