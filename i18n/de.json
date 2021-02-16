@@ -1,6 +1,6 @@
 {
 	"@metadata": {
-		"authors": ["Tim Koester"]
+		"authors": [ "Tim Koester" ]
 	},
 	"favorites-desc": "Erstelle Favoritenliste",
 	"favoritethis": "Zu Favoriten hinzufügen",
@@ -27,7 +27,7 @@
 	"unfavoriteing": "Entfernen ...",
 	"favoriteing": "Hinzufügen ...",
 	"tooltip-pt-favoritelist": "Liste der Seite, deren Änderungen sie überwachen.",
-	"tooltip-ca-favorite" : "Fügt diese Seite zu ihren Favoriten hinzu.",
+	"tooltip-ca-favorite": "Fügt diese Seite zu ihren Favoriten hinzu.",
 	"tooltip-ca-unfavorite": "Entfernt diese Seite aus ihren Favoriten.",
 	"tooltip-favorite": "Fügt diese Seite zu ihren Favoriten hinzu.",
 	"favoritelistedit-numitems": "Ihre Favoritenliste enthält {{PLURAL:$1|ein Titel|$1 Titel}}.",

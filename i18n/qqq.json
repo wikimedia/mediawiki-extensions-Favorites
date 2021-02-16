@@ -1,6 +1,6 @@
 {
 	"@metadata": {
-		"authors": ["James Martindale"]
+		"authors": [ "James Martindale" ]
 	},
 	"favorites-desc": "{{desc|name=Favorites|url=https://www.mediawiki.org/wiki/Extension:Favorites}}",
 	"favoritethis": "Unused",
