@@ -139,7 +139,7 @@ class Favorites {
 		$oldtitle = $ot->getDBkey ();
 		$newtitle = $nt->getDBkey ();
 		
-		$dbw = wfGetDB ( DB_MASTER );
+		$dbw = wfGetDB ( DB_PRIMARY );
 		$res = $dbw->select ( 'favoritelist', 'fl_user', array (
 				'fl_namespace' => $oldnamespace,
 				'fl_title' => $oldtitle 
