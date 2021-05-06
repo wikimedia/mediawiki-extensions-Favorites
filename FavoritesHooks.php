@@ -73,7 +73,7 @@ class FavoritesHooks {
 	public static function onPersonalUrls( &$personal_urls, &$title, $skin ) {
 		global $wgFavoritesPersonalURL;
 
-		if ( $wgFavoritesPersonalURL && $skin->getUser()->isLoggedIn() ) {
+		if ( $wgFavoritesPersonalURL && $skin->getUser()->isRegistered() ) {
 			$url[] = array( 'text' => wfMessage( 'myfavoritelist' )->text(),
 					'href' => SpecialPage::getTitleFor( 'Favoritelist' )->getLocalURL() );
 			$personal_urls = wfArrayInsertAfter( $personal_urls, $url, 'watchlist' );
