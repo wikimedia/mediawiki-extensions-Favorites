@@ -13,7 +13,7 @@ class ApiFavorite extends ApiBase {
 
 	public function execute() {
 		$user = $this->getUser();
-		if ( !$user->isLoggedIn() ) {
+		if ( !$user->isRegistered() ) {
 			$this->dieUsage( 'You must be logged-in to have a favoritelist', 'notloggedin' );
 		}
 
