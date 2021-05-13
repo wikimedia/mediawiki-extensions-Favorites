@@ -359,7 +359,9 @@ class ViewFavorites {
 	 * @return string
 	 */
 	private function getNamespaceHeading($namespace) {
-		return $namespace == NS_MAIN ? wfMessage ( 'blanknamespace' )->text () : htmlspecialchars ( $GLOBALS ['wgContLang']->getFormattedNsText ( $namespace ) );
+		return $namespace == NS_MAIN
+			? wfMessage ( 'blanknamespace' )->text ()
+			: htmlspecialchars ( MediaWikiServices::getInstance()->getContentLanguage()->getFormattedNsText ( $namespace ) );
 	}
 
 	/**
