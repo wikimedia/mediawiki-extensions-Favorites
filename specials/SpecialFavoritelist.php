@@ -215,7 +215,7 @@ class ViewFavorites {
 	 * @return int
 	 */
 	private function countFavoritelist($user) {
-		$dbr = wfGetDB ( DB_MASTER );
+		$dbr = wfGetDB ( DB_PRIMARY );
 		$res = $dbr->select ( 'favoritelist', 'COUNT(fl_user) AS count', array (
 				'fl_user' => $user->getId ()
 		), __METHOD__ );
@@ -233,7 +233,7 @@ class ViewFavorites {
 	 */
 	private function getFavoritelistInfo($user) {
 		$titles = array ();
-		$dbr = wfGetDB ( DB_MASTER );
+		$dbr = wfGetDB ( DB_PRIMARY );
 		$uid = intval ( $user->getId () );
 		list ( $favoritelist, $page ) = $dbr->tableNamesN ( 'favoritelist', 'page' );
 		$sql = "SELECT fl_namespace, fl_title, page_id, page_len, page_is_redirect
@@ -272,7 +272,7 @@ class ViewFavorites {
 	 * @param $user User
 	 */
 	private function unfavoriteTitles($titles, $user) {
-		$dbw = wfGetDB ( DB_MASTER );
+		$dbw = wfGetDB ( DB_PRIMARY );
 
 		foreach ( $titles as $title ) {
 

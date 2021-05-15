@@ -157,7 +157,7 @@ class FavoritelistEditor {
 	 * @return int
 	 */
 	private function countFavoritelist( $user ) {
-		$dbr = wfGetDB( DB_MASTER );
+		$dbr = wfGetDB( DB_PRIMARY );
 		$res = $dbr->select( 'favoritelist', 'COUNT(*) AS count', array( 'fl_user' => $user->getId() ), __METHOD__ );
 		$row = $dbr->fetchObject( $res );
 		return ceil( $row->count);
@@ -172,7 +172,7 @@ class FavoritelistEditor {
 	 */
 	private function getFavoritelist( $user ) {
 		$list = array();
-		$dbr = wfGetDB( DB_MASTER );
+		$dbr = wfGetDB( DB_PRIMARY );
 		$res = $dbr->select(
 			'favoritelist',
 			'*',
@@ -202,7 +202,7 @@ class FavoritelistEditor {
 	 */
 	private function getFavoritelistInfo( $user ) {
 		$titles = array();
-		$dbr = wfGetDB( DB_MASTER );
+		$dbr = wfGetDB( DB_PRIMARY );
 		$uid = intval( $user->getId() );
 		list( $favoritelist, $page ) = $dbr->tableNamesN( 'favoritelist', 'page' );
 		$sql = "SELECT fl_namespace, fl_title, page_id, page_len, page_is_redirect
@@ -253,7 +253,7 @@ class FavoritelistEditor {
 	 * @param $user User
 	 */
 	private function clearFavoritelist( $user ) {
-		$dbw = wfGetDB( DB_MASTER );
+		$dbw = wfGetDB( DB_PRIMARY );
 		$dbw->delete( 'favoritelist', array( 'fl_user' => $user->getId() ), __METHOD__ );
 	}
 
@@ -267,7 +267,7 @@ class FavoritelistEditor {
 	 * @param $user User
 	 */
 	private function favoriteTitles( $titles, $user ) {
-		$dbw = wfGetDB( DB_MASTER );
+		$dbw = wfGetDB( DB_PRIMARY );
 		$rows = array();
 		foreach( $titles as $title ) {
 			if( !$title instanceof Title )
@@ -294,7 +294,7 @@ class FavoritelistEditor {
 	 * @param $user User
 	 */
 	private function unfavoriteTitles( $titles, $user ) {
-		$dbw = wfGetDB( DB_MASTER );
+		$dbw = wfGetDB( DB_PRIMARY );
 		foreach( $titles as $title ) {
 			if( !$title instanceof Title )
 				$title = Title::newFromText( $title );
