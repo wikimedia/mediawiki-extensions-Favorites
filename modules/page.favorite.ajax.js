@@ -3,7 +3,7 @@
  * favorite pages, rather than navigating to a different URI.
  */
 ( function ( mw, $ ) {
-	
+
 	// The name of the page to favorite or unfavorite.
 	var title = mw.config.get( 'wgRelevantPageName' );
 
@@ -95,7 +95,7 @@
 	}
 
 	// Expose public methods
-	mw.page.favorite = {
+	mw.favorite = {
 		updateFavoriteLink: updateFavoriteLink
 	};
 
@@ -133,9 +133,9 @@
 			api = new mw.Api();
 
 			api[action]( title )
-			
+
 				.done( function ( favoriteResponse ) {
-					
+
 					var otherAction = action === 'favorite' ? 'unfavorite' : 'favorite';
 					mw.notify( $.parseHTML( favoriteResponse.favorite.message ), {
 						tag: 'favorite-self'
