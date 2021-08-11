@@ -27,7 +27,7 @@
 		"FavoritesAlias": "SpecialFavorites.alias.php"
 	},
 	"AutoloadClasses": {
-		"Favorites": "includes/Favorites_body.php",
+		"Favorites": "includes/Favorites.php",
 		"BaseAction": "includes/BaseAction.php",
 		"FavoriteAction": "includes/FavoriteAction.php",
 		"UnfavoriteAction": "includes/UnfavoriteAction.php",
