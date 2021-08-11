@@ -31,18 +31,18 @@
 		"BaseAction": "includes/BaseAction.php",
 		"FavoriteAction": "includes/FavoriteAction.php",
 		"UnfavoriteAction": "includes/UnfavoriteAction.php",
-		"SpecialFavoritelist": "specials/SpecialFavoritelist.php",
-		"ViewFavorites": "specials/SpecialFavoritelist.php",
+		"SpecialFavoritelist": "includes/specials/SpecialFavoritelist.php",
+		"ViewFavorites": "includes/specials/SpecialFavoritelist.php",
 		"FavoritelistEditor": "includes/FavoritelistEditor.php",
 		"FavParser": "includes/FavParser.php",
-		"FavoritesHooks": "FavoritesHooks.php",
-		"ApiFavorite": "api/ApiFavorite.php"
+		"FavoritesHooks": "includes/FavoritesHooks.php",
+		"ApiFavorite": "includes/api/ApiFavorite.php"
 	},
 	"ResourceModules": {
 		"ext.favorites": {
 			"scripts": [
-				"modules/page.favorite.ajax.js",
-				"modules/favorites.js"
+				"js/page.favorite.ajax.js",
+				"js/favorites.js"
 			],
 			"dependencies": [
 				"mediawiki.api",
@@ -64,13 +64,13 @@
 			]
 		},
 		"ext.favorites.style": {
-			"styles": "modules/favorites.css",
+			"styles": "css/favorites.css",
 			"position": "top"
 		}
 	},
 	"ResourceFileModulePaths": {
-		"localBasePath": "",
-		"remoteExtPath": "Favorites"
+		"localBasePath": "resources",
+		"remoteExtPath": "Favorites/resources"
 	},
 	"Hooks": {
 		"SkinTemplateNavigation": "FavoritesHooks::onSkinTemplateNavigation",

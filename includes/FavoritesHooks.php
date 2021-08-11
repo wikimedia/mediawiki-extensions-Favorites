@@ -43,7 +43,7 @@ class FavoritesHooks {
 	 * @return bool
 	 */
 	public static function onLoadExtensionSchemaUpdates( DatabaseUpdater $updater ) {
-		$file = __DIR__ . '/sql/favorites.sql';
+		$file = __DIR__ . '/../sql/favorites.sql';
 		$updater->addExtensionTable( 'favoritelist', $file );
 		return true;
 	}
