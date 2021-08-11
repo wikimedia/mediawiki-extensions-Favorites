@@ -1,25 +1,31 @@
 /**
  * Additional mw.Api methods to assist with (un)favoriting wiki pages.
+ *
  * @since 1.19
  */
-
 
 ( function ( mw, $ ) {
 
 	/**
+	 * @param page
+	 * @param success
+	 * @param err
+	 * @param addParams
 	 * @context {mw.Api}
+	 * @return string
 	 */
 	function doFavoriteInternal( page, success, err, addParams ) {
-		var params = {
+		const params = {
 			action: 'favorite',
 			title: String( page ),
 			token: mw.user.tokens.get( 'favorite' ),
 			uselang: mw.config.get( 'wgUserLanguage' )
 		};
+		// eslint-disable-next-line no-unused-vars
 		function ok( data ) {
 			// this doesn't appear to be needed, and it breaks 1.23.
-			//success( data.favorite ); 
-			
+			// success( data.favorite );
+
 		}
 		if ( addParams ) {
 			$.extend( params, addParams );

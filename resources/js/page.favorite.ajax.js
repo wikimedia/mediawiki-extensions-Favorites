@@ -5,7 +5,7 @@
 ( function ( mw, $ ) {
 
 	// The name of the page to favorite or unfavorite.
-	var title = mw.config.get( 'wgRelevantPageName' );
+	const title = mw.config.get( 'wgRelevantPageName' );
 
 	/**
 	 * Update the link text, link href attribute and (if applicable)
@@ -16,7 +16,7 @@
 	 * @param state {String} [optional] 'idle' or 'loading'. Default is 'idle'.
 	 */
 	function updateFavoriteLink( $link, action, state ) {
-		var msgKey, $li, otherAction;
+		let msgKey, $li, otherAction;
 
 		// A valid but empty jQuery object shouldn't throw a TypeError
 		if ( !$link.length ) {
@@ -42,9 +42,9 @@
 			.attr( 'title', mw.msg( 'tooltip-ca-' + action ) )
 			.updateTooltipAccessKeys()
 			.attr( 'href', mw.util.wikiScript() + '?' + $.param( {
-					title: title,
-					action: action
-				} )
+				title: title,
+				action: action
+			} )
 			);
 
 		// Most common ID style
@@ -67,7 +67,7 @@
 	 * @return {string} The extracted action, defaults to 'view'
 	 */
 	function mwUriGetAction( url ) {
-		var action, actionPaths, key, i, m, parts;
+		let action, actionPaths, key, i, m, parts;
 
 		// TODO: Does MediaWiki give action path or query param
 		// precedence? If the former, move this to the bottom
@@ -79,12 +79,12 @@
 		actionPaths = mw.config.get( 'wgActionPaths' );
 		for ( key in actionPaths ) {
 			if ( actionPaths.hasOwnProperty( key ) ) {
-				parts = actionPaths[key].split( '$1' );
+				parts = actionPaths[ key ].split( '$1' );
 				for ( i = 0; i < parts.length; i++ ) {
-					parts[i] = mw.util.escapeRegExp( parts[i] );
+					parts[ i ] = mw.util.escapeRegExp( parts[ i ] );
 				}
 				m = new RegExp( parts.join( '(.+)' ) ).exec( url );
-				if ( m && m[1] ) {
+				if ( m && m[ 1 ] ) {
 					return key;
 				}
 
@@ -100,7 +100,7 @@
 	};
 
 	$( function () {
-		var $links = $( '.mw-favoritelink a, a.mw-favoritelink, ' +
+		let $links = $( '.mw-favoritelink a, a.mw-favoritelink, ' +
 			'#ca-favorite a, #ca-unfavorite a, #mw-unfavorite-link1, ' +
 			'#mw-unfavorite-link2, #mw-favorite-link2, #mw-favorite-link1' );
 
@@ -108,10 +108,10 @@
 		$links = $links.filter( ':not( #bodyContent *, #content * )' );
 
 		$links.click( function ( e ) {
-			var action, api, $link;
+			let action, api, $link;
 
 			// Start preloading the notification module (normally loaded by mw.notify())
-			mw.loader.load( ['mediawiki.notification'], null, true );
+			mw.loader.load( [ 'mediawiki.notification' ], null, true );
 
 			action = mwUriGetAction( this.href );
 
@@ -132,11 +132,11 @@
 			updateFavoriteLink( $link, action, 'loading' );
 			api = new mw.Api();
 
-			api[action]( title )
+			api[ action ]( title )
 
 				.done( function ( favoriteResponse ) {
 
-					var otherAction = action === 'favorite' ? 'unfavorite' : 'favorite';
+					const otherAction = action === 'favorite' ? 'unfavorite' : 'favorite';
 					mw.notify( $.parseHTML( favoriteResponse.favorite.message ), {
 						tag: 'favorite-self'
 					} );
@@ -146,7 +146,7 @@
 
 				} )
 				.fail( function () {
-					var cleanTitle, msg, link;
+					let cleanTitle, msg, link;
 					// Reset link to non-loading mode
 					updateFavoriteLink( $link, action );
 
@@ -167,4 +167,3 @@
 	} );
 
 }( mediaWiki, jQuery ) );
-

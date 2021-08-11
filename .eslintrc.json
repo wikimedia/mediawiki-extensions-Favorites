@@ -1,7 +1,17 @@
 {
 	"root": true,
 	"extends": [
-		"wikimedia/client-es5",
+		"wikimedia/client-es6",
 		"wikimedia/mediawiki"
-	]
+	],
+	"rules": {
+		"jsdoc/check-tag-names": "off",
+		"jsdoc/no-undefined-types": "off",
+		"jsdoc/require-param-type": "off",
+		"jsdoc/require-returns-type": "off",
+		"mediawiki/msg-doc": "off",
+		"no-prototype-builtins": "off",
+		"no-undef": "off",
+		"prefer-const": "off"
+	}
 }
