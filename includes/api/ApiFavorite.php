@@ -61,6 +61,9 @@ class ApiFavorite extends ApiBase {
 	//	return 'favorite';
 	//}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function getAllowedParams() {
 		return array(
 			'title' => array(
