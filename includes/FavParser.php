@@ -113,8 +113,9 @@ class FavParser {
 						$cache->addBadLinkObj( $title );
 					}
 					// Ignore non-talk
-					if ( !$title->isTalkPage() )
+					if ( !$title->isTalkPage() ) {
 						$titles[$row->fl_namespace][$row->fl_title] = $row->page_is_redirect;
+					}
 				}
 			}
 		}
@@ -165,8 +166,9 @@ class FavParser {
 	 */
 	private function buildRemoveLine( $title, $redirect ) {
 		$link = Linker::link( $title );
-		if ( $redirect )
+		if ( $redirect ) {
 			$link = '<span class="favoritelistredir">' . $link . '</span>';
+		}
 
 		return "<li>" . $link . "</li>\n";
 	}

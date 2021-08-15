@@ -44,8 +44,9 @@ class FavoritelistEditor {
 						$this->favoriteTitles( $toFavorite, $user );
 						$this->unfavoriteTitles( $toUnfavorite, $user );
 						$user->invalidateCache();
-						if ( count( $toFavorite ) > 0 || count( $toUnfavorite ) > 0 )
+						if ( count( $toFavorite ) > 0 || count( $toUnfavorite ) > 0 ) {
 							$output->addHTML( wfMessage( 'favoritelistedit-raw-done' )->parse() );
+						}
 						if ( ( $count = count( $toFavorite ) ) > 0 ) {
 							$output->addHTML( wfMessage( 'favoritelistedit-raw-added', $count )->parse() );
 							$this->showTitles( $toFavorite, $output, $output->getSkin() );
@@ -99,8 +100,9 @@ class FavoritelistEditor {
 		$titles = [];
 		if ( !is_array( $list ) ) {
 			$list = explode( "\n", trim( $list ) );
-			if ( !is_array( $list ) )
+			if ( !is_array( $list ) ) {
 				return [];
+			}
 		}
 		foreach ( $list as $text ) {
 			$text = trim( $text );
@@ -127,8 +129,9 @@ class FavoritelistEditor {
 		// Do a batch existence check
 		$batch = new LinkBatch();
 		foreach ( $titles as $title ) {
-			if ( !$title instanceof Title )
+			if ( !$title instanceof Title ) {
 				$title = Title::newFromText( $title );
+			}
 			if ( $title instanceof Title ) {
 				$batch->addObj( $title );
 				// if ( $title->canHaveTalkPage() ) {
@@ -140,8 +143,9 @@ class FavoritelistEditor {
 		// Print out the list
 		$output->addHTML( "<ul>\n" );
 		foreach ( $titles as $title ) {
-			if ( !$title instanceof Title )
+			if ( !$title instanceof Title ) {
 				$title = Title::newFromText( $title );
+			}
 			if ( $title instanceof Title ) {
 				$output->addHTML( "<li>" . Linker::link( $title ) . "</li>\n" );
 			}
@@ -183,8 +187,9 @@ class FavoritelistEditor {
 		if ( $res->numRows() > 0 ) {
 			while ( $row = $res->fetchObject() ) {
 				$title = Title::makeTitleSafe( $row->fl_namespace, $row->fl_title );
-				if ( $title instanceof Title && !$title->isTalkPage() )
+				if ( $title instanceof Title && !$title->isTalkPage() ) {
 					$list[] = $title->getPrefixedText();
+				}
 			}
 			$res->free();
 		}
@@ -269,8 +274,9 @@ class FavoritelistEditor {
 		$dbw = wfGetDB( DB_PRIMARY );
 		$rows = [];
 		foreach ( $titles as $title ) {
-			if ( !$title instanceof Title )
+			if ( !$title instanceof Title ) {
 				$title = Title::newFromText( $title );
+			}
 			if ( $title instanceof Title ) {
 				$rows[] = [
 					'fl_user' => $user->getId(),
@@ -295,8 +301,9 @@ class FavoritelistEditor {
 	private function unfavoriteTitles( $titles, $user ) {
 		$dbw = wfGetDB( DB_PRIMARY );
 		foreach ( $titles as $title ) {
-			if ( !$title instanceof Title )
+			if ( !$title instanceof Title ) {
 				$title = Title::newFromText( $title );
+			}
 			if ( $title instanceof Title ) {
 				$dbw->delete(
 					'favoritelist',
@@ -392,8 +399,9 @@ class FavoritelistEditor {
 		# We moved the Tools array completely into the "if( $title->exists() )" section.
 		$showlinks = false;
 		$link = Linker::link( $title );
-		if ( $redirect )
+		if ( $redirect ) {
 			$link = '<span class="favoritelistredir">' . $link . '</span>';
+		}
 		if ( $title->exists() ) {
 			$showlinks = true;
 			// if ( $title->canHaveTalkPage() ) {
@@ -445,8 +453,9 @@ class FavoritelistEditor {
 		$form .= Xml::openElement( 'textarea', [ 'id' => 'titles', 'name' => 'titles',
 			'rows' => 25, 'cols' => 80 ] );
 		$titles = $this->getFavoritelist( $user );
-		foreach ( $titles as $title )
+		foreach ( $titles as $title ) {
 			$form .= htmlspecialchars( $title ) . "\n";
+		}
 		$form .= '</textarea>';
 		$form .= '<p>' . Xml::submitButton( wfMessage( 'favoritelistedit-raw-submit' ) ) . '</p>';
 		$form .= '</fieldset></form>';

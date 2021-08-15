@@ -155,8 +155,9 @@ class ViewFavorites {
 		$titles = [];
 		if ( !is_array( $list ) ) {
 			$list = explode( "\n", trim( $list ) );
-			if ( !is_array( $list ) )
+			if ( !is_array( $list ) ) {
 				return [];
+			}
 		}
 		foreach ( $list as $text ) {
 			$text = trim( $text );
@@ -184,8 +185,9 @@ class ViewFavorites {
 		// Do a batch existence check
 		$batch = new LinkBatch();
 		foreach ( $titles as $title ) {
-			if ( !$title instanceof Title )
+			if ( !$title instanceof Title ) {
 				$title = Title::newFromText( $title );
+			}
 			// if( $title instanceof Title ) {
 			// 	$batch->addObj( $title );
 			// 	if ( $title->canHaveTalkPage() ) {
@@ -197,8 +199,9 @@ class ViewFavorites {
 		// Print out the list
 		$output->addHTML( "<ul>\n" );
 		foreach ( $titles as $title ) {
-			if ( !$title instanceof Title )
+			if ( !$title instanceof Title ) {
 				$title = Title::newFromText( $title );
+			}
 			if ( $title instanceof Title ) {
 				$output->addHTML( "<li>" . Linker::link( $title ) .
 				"</li>\n" );
@@ -251,8 +254,9 @@ class ViewFavorites {
 						$cache->addBadLinkObj( $title );
 					}
 					// Ignore non-talk
-					if ( !$title->isTalkPage() )
+					if ( !$title->isTalkPage() ) {
 						$titles[$row->fl_namespace][$row->fl_title] = $row->page_is_redirect;
+					}
 				}
 			}
 		}
@@ -274,8 +278,9 @@ class ViewFavorites {
 
 		foreach ( $titles as $title ) {
 
-			if ( !$title instanceof Title )
+			if ( !$title instanceof Title ) {
 				$title = Title::newFromText( $title );
+			}
 			if ( $title instanceof Title ) {
 
 				$dbw->delete( 'favoritelist', [
@@ -374,8 +379,9 @@ class ViewFavorites {
 		// We moved the Tools array completely into the "if( $title->exists() )" section.
 		$showlinks = false;
 		$link = Linker::link( $title );
-		if ( $redirect )
+		if ( $redirect ) {
 			$link = '<span class="favoritelistredir">' . $link . '</span>';
+		}
 
 		if ( $title->exists() ) {
 			$showlinks = true;
