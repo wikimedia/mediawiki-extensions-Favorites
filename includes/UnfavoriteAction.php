@@ -8,10 +8,20 @@ class UnfavoriteAction extends BaseAction {
 		return 'unfavorite';
 	}
 
+	/**
+	 * @return string
+	 */
 	protected function successMessage() {
 		return 'removedfavoritetext';
 	}
 
+	/**
+	 * @param \Wikimedia\Rdbms\DBConnRef $dbw
+	 * @param int $subject
+	 * @param User $user
+	 * @param Title $title
+	 * @return bool
+	 */
 	protected function doAction(
 		\Wikimedia\Rdbms\DBConnRef $dbw, int $subject, User $user, Title $title
 	) {
