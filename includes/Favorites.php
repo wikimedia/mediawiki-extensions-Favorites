@@ -128,7 +128,7 @@ class Favorites {
 	 *        	page title to add favorite on
 	 */
 	public static function duplicateEntries( $ot, $nt ) {
-		Favorites::doDuplicateEntries( $ot->getSubjectPage(), $nt->getSubjectPage() );
+		self::doDuplicateEntries( $ot->getSubjectPage(), $nt->getSubjectPage() );
 	}
 
 	/**
