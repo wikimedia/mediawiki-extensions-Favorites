@@ -3,16 +3,20 @@
 use MediaWiki\MediaWikiServices;
 
 class FavParser {
-	private $mTitle;
 
+	/**
+	 * @param $argv
+	 * @param $parser
+	 * @return string
+	 */
 	function wfSpecialFavoritelist( $argv, $parser ) {
 		$output = '';
 
 		$specialTitle = SpecialPage::getTitleFor( 'Favoritelist' );
-		$this->mTitle = $parser->getTitle();
+		$mTitle = $parser->getTitle();
 
-		if ( $this->mTitle->getNamespace() == NS_USER && array_key_exists( 'userpage', $argv ) && $argv['userpage'] ) {
-			$parts = explode( '/', $this->mTitle->getText() );
+		if ( $mTitle->getNamespace() == NS_USER && array_key_exists( 'userpage', $argv ) && $argv['userpage'] ) {
+			$parts = explode( '/', $mTitle->getText() );
 			$rootPart = $parts[0];
 			$user = User::newFromName( $rootPart, true /* don't allow IP users*/ );
 			// echo "Userpage: $user";
@@ -32,8 +36,8 @@ class FavParser {
 				[],
 				[ 'returnto' => $specialTitle->getPrefixedText() ]
 			);
-			$output = wfMessage( 'favoritelistanontext' )->rawParams( $llink )->escaped();
-			return $output;
+
+			return wfMessage( 'favoritelistanontext' )->rawParams( $llink )->escaped();
 
 		}
 
@@ -43,6 +47,11 @@ class FavParser {
 		return $output;
 	}
 
+	/**
+	 * @param User $user
+	 * @param OutputPage $output
+	 * @return string
+	 */
 	private function viewFavList( $user, $output ) {
 		$output = $this->showNormalForm( $output, $user );
 
@@ -52,8 +61,8 @@ class FavParser {
 	/**
 	 * Does the user want to display an editlink?
 	 *
-	 * @param $argv Array of values from the parser
-	 * @return Output
+	 * @param array $argv Array of values from the parser
+	 * @return string
 	 */
 	private function editlink( $argv ) {
 		$output = '';
@@ -74,7 +83,7 @@ class FavParser {
 	/**
 	 * Count the number of titles on a user's favoritelist, excluding talk pages
 	 *
-	 * @param $user User
+	 * @param User $user
 	 * @return int
 	 */
 	private function countFavoritelist( $user ) {
@@ -89,7 +98,7 @@ class FavParser {
 	 * and return as a two-dimensional array with namespace, title and
 	 * redirect status
 	 *
-	 * @param $user User
+	 * @param User $user
 	 * @return array
 	 */
 	private function getFavoritelistInfo( $user ) {
@@ -125,8 +134,9 @@ class FavParser {
 	/**
 	 * Show the standard favoritelist
 	 *
-	 * @param $output OutputPage
-	 * @param $user User
+	 * @param OutputPage $output
+	 * @param User $user
+	 * @return string
 	 */
 	private function showNormalForm( $output, $user ) {
 		if ( $this->countFavoritelist( $user ) > 0 ) {
@@ -134,15 +144,15 @@ class FavParser {
 			$output .= $form;
 			return $output;
 		} else {
-			$output = wfMessage( 'nofavoritelist' )->text();
-			return $output;
+			return wfMessage( 'nofavoritelist' )->text();
 		}
 	}
 
 	/**
 	 * Build part of the standard favoritelist
 	 *
-	 * @param $user User
+	 * @param User $user
+	 * @return string
 	 */
 	private function buildRemoveList( $user ) {
 		$list = "";
@@ -160,8 +170,8 @@ class FavParser {
 	/**
 	 * Build a single list item containing a link
 	 *
-	 * @param $title Title
-	 * @param $redirect bool
+	 * @param Title $title
+	 * @param bool $redirect
 	 * @return string
 	 */
 	private function buildRemoveLine( $title, $redirect ) {
