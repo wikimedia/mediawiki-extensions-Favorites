@@ -15,8 +15,6 @@
 		<exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment" />
 		<exclude name="MediaWiki.Usage.DbrQueryUsage.DbrQueryFound" />
 		<exclude name="PSR12.Properties.ConstantVisibility.NotFound" />
-		<exclude name="PSR2.Classes.PropertyDeclaration.ScopeMissing" />
-		<exclude name="PSR2.Classes.PropertyDeclaration.VarUsed" />
 		<exclude name="Squiz.Scope.MemberVarScope.Missing" />
 		<exclude name="Squiz.Scope.MethodScope.Missing" />
 	</rule>

@@ -1,6 +1,7 @@
 <?php
 class Favorites {
-	var $user;
+	/** @var User */
+	private $user;
 
 	function favoritesLinks( &$sktemplate, &$links ) {
 		global $wgUseIconFavorite;
