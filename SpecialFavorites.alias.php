@@ -6,18 +6,18 @@
  * @ingroup Extensions
  */
 
-$specialPageAliases = array();
+$specialPageAliases = [];
 
 /** English
  * @author Jeremy Lemley
  */
-$specialPageAliases['en'] = array(
-	'Favoritelist' => array( 'Favoritelist', 'My Favorites' ),
-);
+$specialPageAliases['en'] = [
+	'Favoritelist' => [ 'Favoritelist', 'My Favorites' ],
+];
 
 /** German
  * @author Tim Koester
  */
-$specialPageAliases['de'] = array(
-	'Favoritelist' => array( 'FavoritenListe', 'Favoriten' ),
-);
+$specialPageAliases['de'] = [
+	'Favoritelist' => [ 'FavoritenListe', 'Favoriten' ],
+];

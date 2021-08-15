@@ -15,7 +15,7 @@ class FavoritesHooks {
 	}
 
 	public static function onParserFirstCallInit( Parser &$parser ) {
-		$parser->setHook( 'favorites', array( __CLASS__, 'renderFavorites' ) );
+		$parser->setHook( 'favorites', [ __CLASS__, 'renderFavorites' ] );
 
 		return true;
 	}
@@ -60,9 +60,9 @@ class FavoritesHooks {
 
 	public static function onArticleDeleteComplete( &$article, &$user, $reason, $id ) {
 		$dbw = wfGetDB( DB_PRIMARY );
-		$dbw->delete( 'favoritelist', array(
+		$dbw->delete( 'favoritelist', [
 				'fl_namespace' => $article->mTitle->getNamespace(),
-				'fl_title' => $article->mTitle->getDBKey() ),
+				'fl_title' => $article->mTitle->getDBKey() ],
 				__METHOD__ );
 		return true;
 	}
@@ -71,8 +71,8 @@ class FavoritesHooks {
 		global $wgFavoritesPersonalURL;
 
 		if ( $wgFavoritesPersonalURL && $skin->getUser()->isRegistered() ) {
-			$url[] = array( 'text' => wfMessage( 'myfavoritelist' )->text(),
-					'href' => SpecialPage::getTitleFor( 'Favoritelist' )->getLocalURL() );
+			$url[] = [ 'text' => wfMessage( 'myfavoritelist' )->text(),
+					'href' => SpecialPage::getTitleFor( 'Favoritelist' )->getLocalURL() ];
 			$personal_urls = wfArrayInsertAfter( $personal_urls, $url, 'watchlist' );
 		}
 

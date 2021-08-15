@@ -96,11 +96,11 @@ class FavoritelistEditor {
 	 * @return array
 	 */
 	private function extractTitles( $list ) {
-		$titles = array();
+		$titles = [];
 		if ( !is_array( $list ) ) {
 			$list = explode( "\n", trim( $list ) );
 			if ( !is_array( $list ) )
-				return array();
+				return [];
 		}
 		foreach ( $list as $text ) {
 			$text = trim( $text );
@@ -157,7 +157,7 @@ class FavoritelistEditor {
 	 */
 	private function countFavoritelist( $user ) {
 		$dbr = wfGetDB( DB_PRIMARY );
-		$res = $dbr->select( 'favoritelist', 'COUNT(*) AS count', array( 'fl_user' => $user->getId() ), __METHOD__ );
+		$res = $dbr->select( 'favoritelist', 'COUNT(*) AS count', [ 'fl_user' => $user->getId() ], __METHOD__ );
 		$row = $dbr->fetchObject( $res );
 		return ceil( $row->count );
 	}
@@ -170,14 +170,14 @@ class FavoritelistEditor {
 	 * @return array
 	 */
 	private function getFavoritelist( $user ) {
-		$list = array();
+		$list = [];
 		$dbr = wfGetDB( DB_PRIMARY );
 		$res = $dbr->select(
 			'favoritelist',
 			'*',
-			array(
+			[
 				'fl_user' => $user->getId(),
-			),
+			],
 			__METHOD__
 		);
 		if ( $res->numRows() > 0 ) {
@@ -200,7 +200,7 @@ class FavoritelistEditor {
 	 * @return array
 	 */
 	private function getFavoritelistInfo( $user ) {
-		$titles = array();
+		$titles = [];
 		$dbr = wfGetDB( DB_PRIMARY );
 		$uid = intval( $user->getId() );
 		list( $favoritelist, $page ) = $dbr->tableNamesN( 'favoritelist', 'page' );
@@ -253,7 +253,7 @@ class FavoritelistEditor {
 	 */
 	private function clearFavoritelist( $user ) {
 		$dbw = wfGetDB( DB_PRIMARY );
-		$dbw->delete( 'favoritelist', array( 'fl_user' => $user->getId() ), __METHOD__ );
+		$dbw->delete( 'favoritelist', [ 'fl_user' => $user->getId() ], __METHOD__ );
 	}
 
 	/**
@@ -267,17 +267,17 @@ class FavoritelistEditor {
 	 */
 	private function favoriteTitles( $titles, $user ) {
 		$dbw = wfGetDB( DB_PRIMARY );
-		$rows = array();
+		$rows = [];
 		foreach ( $titles as $title ) {
 			if ( !$title instanceof Title )
 				$title = Title::newFromText( $title );
 			if ( $title instanceof Title ) {
-				$rows[] = array(
+				$rows[] = [
 					'fl_user' => $user->getId(),
 					'fl_namespace' => ( $title->getNamespace() | 1 ),
 					'fl_title' => $title->getDBkey(),
 					'fl_notificationtimestamp' => null,
-				);
+				];
 			}
 		}
 		$dbw->insert( 'favoritelist', $rows, __METHOD__, 'IGNORE' );
@@ -300,14 +300,14 @@ class FavoritelistEditor {
 			if ( $title instanceof Title ) {
 				$dbw->delete(
 					'favoritelist',
-					array(
+					[
 						'fl_user' => $user->getId(),
 						'fl_namespace' => ( $title->getNamespace() ),
 						'fl_title' => $title->getDBkey(),
-					)
+					]
 				);
 				$article = new Article( $title );
-				Hooks::run( 'UnfavoriteArticleComplete', array( &$user,&$article ) );
+				Hooks::run( 'UnfavoriteArticleComplete', [ &$user,&$article ] );
 			}
 		}
 	}
@@ -321,8 +321,8 @@ class FavoritelistEditor {
 	private function showNormalForm( $output, $user ) {
 		if ( $this->showItemCount( $output, $user ) > 0 ) {
 			$self = SpecialPage::getTitleFor( 'Favoritelist' );
-			$form  = Xml::openElement( 'form', array( 'method' => 'post',
-				'action' => $self->getLocalUrl( array( 'action' => 'edit' ) ) ) );
+			$form  = Xml::openElement( 'form', [ 'method' => 'post',
+				'action' => $self->getLocalUrl( [ 'action' => 'edit' ] ) ] );
 			$form .= Html::hidden( 'token', $user->getEditToken( 'favoritelistedit' ) );
 			$form .= "<fieldset>\n<legend>" . wfMessage( 'favoritelistedit-normal-legend' )->text() . "</legend>";
 			$form .= wfMessage( 'favoritelistedit-normal-explain' )->parse();
@@ -402,26 +402,26 @@ class FavoritelistEditor {
 			$tools[] = Linker::link(
 				$title,
 				wfMessage( 'history_short' )->text(),
-				array(),
-				array( 'action' => 'history' ),
-				array( 'known', 'noclasses' )
+				[],
+				[ 'action' => 'history' ],
+				[ 'known', 'noclasses' ]
 			);
 		}
 		if ( $title->getNamespace() == NS_USER && !$title->isSubpage() ) {
 			$tools[] = Linker::link(
 				SpecialPage::getTitleFor( 'Contributions', $title->getText() ),
 				wfMessage( 'contributions' )->text(),
-				array(),
-				array(),
-				array( 'known', 'noclasses' )
+				[],
+				[],
+				[ 'known', 'noclasses' ]
 			);
 		}
 
 		if ( $showlinks ) {
-		return Xml::check( 'titles[]', false, array( 'value' => $title->getPrefixedText() ) )
+		return Xml::check( 'titles[]', false, [ 'value' => $title->getPrefixedText() ] )
 			. $link . " (" . $wgLang->pipeList( $tools ) . ")" . "\n<br>";
 		} else {
-			return Xml::check( 'titles[]', false, array( 'value' => $title->getPrefixedText() ) )
+			return Xml::check( 'titles[]', false, [ 'value' => $title->getPrefixedText() ] )
 			. $link . "\n<br>";
 		}
 	}
@@ -435,15 +435,15 @@ class FavoritelistEditor {
 	public function showRawForm( $output, $user ) {
 		$this->showItemCount( $output, $user );
 		$self = SpecialPage::getTitleFor( 'Favoritelist' );
-		$form  = Xml::openElement( 'form', array( 'method' => 'post',
-			'action' => $self->getLocalUrl( array( 'action' => 'raw' ) ) ) );
+		$form  = Xml::openElement( 'form', [ 'method' => 'post',
+			'action' => $self->getLocalUrl( [ 'action' => 'raw' ] ) ] );
 		$form .= Html::hidden( 'token', $user->getEditToken( 'favoritelistedit' ) );
 		$form .= '<fieldset><legend>' . wfMessage( 'favoritelistedit-raw-legend' )->text() . '</legend>';
 		$form .= wfMessage( 'favoritelistedit-raw-explain' )->parse();
 		$form .= Xml::label( wfMessage( 'favoritelistedit-raw-titles' ), 'titles' );
 		$form .= "<br />\n";
-		$form .= Xml::openElement( 'textarea', array( 'id' => 'titles', 'name' => 'titles',
-			'rows' => 25, 'cols' => 80 ) );
+		$form .= Xml::openElement( 'textarea', [ 'id' => 'titles', 'name' => 'titles',
+			'rows' => 25, 'cols' => 80 ] );
 		$titles = $this->getFavoritelist( $user );
 		foreach ( $titles as $title )
 			$form .= htmlspecialchars( $title ) . "\n";
@@ -484,16 +484,16 @@ class FavoritelistEditor {
 	public static function buildTools() {
 		global $wgLang;
 
-		$tools = array();
-		$modes = array( 'view' => false, 'edit' => 'edit', 'raw' => 'raw' );
+		$tools = [];
+		$modes = [ 'view' => false, 'edit' => 'edit', 'raw' => 'raw' ];
 		foreach ( $modes as $mode => $subpage ) {
 			// can use messages 'favoritelisttools-view', 'favoritelisttools-edit', 'favoritelisttools-raw'
 			$tools[] = Linker::link(
 				SpecialPage::getTitleFor( 'Favoritelist', $subpage ),
 				wfMessage( "favoritelisttools-{$mode}" )->text(),
-				array(),
-				array(),
-				array( 'known', 'noclasses' )
+				[],
+				[],
+				[ 'known', 'noclasses' ]
 			);
 		}
 		return $wgLang->pipeList( $tools );

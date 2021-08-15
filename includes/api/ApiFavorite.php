@@ -21,10 +21,10 @@ class ApiFavorite extends ApiBase {
 		$title = Title::newFromText( $params['title'] );
 
 		if ( !$title || $title->getNamespace() < 0 ) {
-			$this->dieUsageMsg( array( 'invalidtitle', $params['title'] ) );
+			$this->dieUsageMsg( [ 'invalidtitle', $params['title'] ] );
 		}
 
-		$res = array( 'title' => $title->getPrefixedText() );
+		$res = [ 'title' => $title->getPrefixedText() ];
 
 		if ( $params['unfavorite'] ) {
 			$res['unfavorited'] = '';
@@ -64,25 +64,25 @@ class ApiFavorite extends ApiBase {
 	 * @inheritDoc
 	 */
 	public function getAllowedParams() {
-		return array(
-			'title' => array(
+		return [
+			'title' => [
 				ApiBase::PARAM_TYPE => 'string',
 				ApiBase::PARAM_REQUIRED => true
-			),
+			],
 			'unfavorite' => false,
 			// 'token' => array(
 			//	ApiBase::PARAM_TYPE => 'string',
 			//	ApiBase::PARAM_REQUIRED => true
 			//),
-		);
+		];
 	}
 
 	public function getParamDescription() {
-		return array(
+		return [
 			'title' => 'The page to (un)favorite',
 			'unfavorite' => 'If set the page will be unfavorited rather than favorited',
 			'token' => 'A token previously acquired via prop=info',
-		);
+		];
 	}
 
 	public function getDescription() {
@@ -90,10 +90,10 @@ class ApiFavorite extends ApiBase {
 	}
 
 	public function getExamples() {
-		return array(
+		return [
 			'api.php?action=favorite&title=Main_Page' => 'Favorite the page "Main Page"',
 			'api.php?action=favorite&title=Main_Page&unfavorite=' => 'Unfavorite the page "Main Page"',
-		);
+		];
 	}
 
 	public function getHelpUrls() {

@@ -49,16 +49,16 @@ class Favorites {
 		// 'name' => 'pushform'
 		// );
 
-		$links[$place][$mode] = array(
+		$links[$place][$mode] = [
 				'class' => $class,
 				'text' => $text,
 				// uses 'favorite' or 'unfavorite' message
 				// 'href' => $this->getTitle()->getLocalURL( array( 'action' => $mode) ) //'href' => $favTitle->getLocalUrl( 'action=' . $mode )
-				'href' => $title->getLocalURL( array(
+				'href' => $title->getLocalURL( [
 						'action' => $mode,
 						'token' => $token
-				) )
-		);
+				] )
+		];
 
 		return false;
 	}
@@ -68,11 +68,11 @@ class Favorites {
 	 */
 	private function inFavorites( $ns, $titleKey ) {
 		$dbr = wfGetDB( DB_REPLICA );
-		$res = $dbr->select( 'favoritelist', 1, array(
+		$res = $dbr->select( 'favoritelist', 1, [
 				'fl_user' => $this->user->getId(),
 				'fl_namespace' => $ns,
 				'fl_title' => $titleKey
-		), __METHOD__ );
+		], __METHOD__ );
 		$isfavorited = ( $dbr->numRows( $res ) > 0 ) ? true : false;
 		return $isfavorited;
 	}
@@ -92,10 +92,10 @@ class Favorites {
 		if ( $action != 'unfavorite' ) {
 			$action = 'favorite';
 		}
-		$salt = array(
+		$salt = [
 				$action,
 				$title->getDBkey()
-		);
+		];
 
 		// This token stronger salted and not compatible with ApiFavorite
 		// It's title/action specific because index.php is GET and API is POST
@@ -142,18 +142,18 @@ class Favorites {
 		$newtitle = $nt->getDBkey();
 
 		$dbw = wfGetDB( DB_PRIMARY );
-		$res = $dbw->select( 'favoritelist', 'fl_user', array(
+		$res = $dbw->select( 'favoritelist', 'fl_user', [
 				'fl_namespace' => $oldnamespace,
 				'fl_title' => $oldtitle
-		), __METHOD__, 'FOR UPDATE' );
+		], __METHOD__, 'FOR UPDATE' );
 		// Construct array to replace into the favoritelist
-		$values = array();
+		$values = [];
 		while ( $s = $dbw->fetchObject( $res ) ) {
-			$values[] = array(
+			$values[] = [
 					'fl_user' => $s->fl_user,
 					'fl_namespace' => $newnamespace,
 					'fl_title' => $newtitle
-			);
+			];
 		}
 		$dbw->freeResult( $res );
 
@@ -165,19 +165,19 @@ class Favorites {
 		// Perform replace
 		// Note that multi-row replace is very efficient for MySQL but may be inefficient for
 		// some other DBMSes, mostly due to poor simulation by us
-		$dbw->replace( 'favoritelist', array(
-				array(
+		$dbw->replace( 'favoritelist', [
+				[
 						'fl_user',
 						'fl_namespace',
 						'fl_title'
-				)
-		), $values, __METHOD__ );
+				]
+		], $values, __METHOD__ );
 
 		// Delete the old item - we don't need to have the old page on the list of favorites.
-		$dbw->delete( 'favoritelist', array(
+		$dbw->delete( 'favoritelist', [
 				'fl_namespace' => $oldnamespace,
 				'fl_title' => $oldtitle
-		), $fname = 'Database::delete' );
+		], $fname = 'Database::delete' );
 		return true;
 	}
 }

@@ -29,8 +29,8 @@ class FavParser {
 			$llink = Linker::linkKnown(
 				SpecialPage::getTitleFor( 'Userlogin' ),
 				wfMessage( 'loginreqlink' )->text(),
-				array(),
-				array( 'returnto' => $specialTitle->getPrefixedText() )
+				[],
+				[ 'returnto' => $specialTitle->getPrefixedText() ]
 			);
 			$output = wfMessage( 'favoritelistanontext' )->rawParams( $llink )->escaped();
 			return $output;
@@ -63,9 +63,9 @@ class FavParser {
 				Linker::link(
 					SpecialPage::getTitleFor( 'Favoritelist', 'edit' ),
 					wfMessage( "favoritelisttools-edit" )->escaped(),
-					array(),
-					array(),
-					array( 'known', 'noclasses' )
+					[],
+					[],
+					[ 'known', 'noclasses' ]
 				) . "</div>";
 		}
 		return $output;
@@ -79,7 +79,7 @@ class FavParser {
 	 */
 	private function countFavoritelist( $user ) {
 		$dbr = wfGetDB( DB_PRIMARY );
-		$res = $dbr->select( 'favoritelist', 'COUNT(fl_user) AS count', array( 'fl_user' => $user->getId() ), __METHOD__ );
+		$res = $dbr->select( 'favoritelist', 'COUNT(fl_user) AS count', [ 'fl_user' => $user->getId() ], __METHOD__ );
 		$row = $dbr->fetchObject( $res );
 		return ceil( $row->count );
 	}
@@ -93,7 +93,7 @@ class FavParser {
 	 * @return array
 	 */
 	private function getFavoritelistInfo( $user ) {
-		$titles = array();
+		$titles = [];
 		$dbr = wfGetDB( DB_PRIMARY );
 		$uid = intval( $user->getId() );
 		list( $favoritelist, $page ) = $dbr->tableNamesN( 'favoritelist', 'page' );
