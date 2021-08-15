@@ -7,6 +7,10 @@
  */
 class ApiFavorite extends ApiBase {
 
+	/**
+	 * @param ApiMain $main
+	 * @param string $action
+	 */
 	public function __construct( $main, $action ) {
 		parent::__construct( $main, $action );
 	}
@@ -43,10 +47,16 @@ class ApiFavorite extends ApiBase {
 		$this->getResult()->addValue( null, $this->getModuleName(), $res );
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function mustBePosted() {
 		return true;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function isWriteMode() {
 		return true;
 	}
@@ -77,6 +87,9 @@ class ApiFavorite extends ApiBase {
 		];
 	}
 
+	/**
+	 * @return string[]
+	 */
 	public function getParamDescription() {
 		return [
 			'title' => 'The page to (un)favorite',
@@ -85,10 +98,16 @@ class ApiFavorite extends ApiBase {
 		];
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getDescription() {
 		return 'Add or remove a page from/to the current user\'s favoritelist';
 	}
 
+	/**
+	 * @return string[]
+	 */
 	public function getExamples() {
 		return [
 			'api.php?action=favorite&title=Main_Page' => 'Favorite the page "Main Page"',
@@ -96,6 +115,9 @@ class ApiFavorite extends ApiBase {
 		];
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getHelpUrls() {
 		return 'https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:Favorites';
 	}
