@@ -1,14 +1,12 @@
 <?php
 
 class FavoritesHooks {
-	public static function onSkinTemplateNavigation(&$sktemplate, &$links) {
-
+	public static function onSkinTemplateNavigation( &$sktemplate, &$links ) {
 		$favClass = new Favorites;
-		$favClass->favoritesLinks($sktemplate, $links);
-		//if ( $user->isAllowed( 'writeapi' ) ) {
-		//$sktemplate->getOutput()->addModules( 'ext.favorites' );
-		//}
-
+		$favClass->favoritesLinks( $sktemplate, $links );
+		// if ( $user->isAllowed( 'writeapi' ) ) {
+		// $sktemplate->getOutput()->addModules( 'ext.favorites' );
+		// }
 	}
 
 	public static function onBeforePageDisplay( OutputPage &$out, Skin &$skin ) {
@@ -16,8 +14,7 @@ class FavoritesHooks {
 		$out->addModules( 'ext.favorites.style' );
 	}
 
-	public static function onParserFirstCallInit(Parser &$parser) {
-
+	public static function onParserFirstCallInit( Parser &$parser ) {
 		$parser->setHook( 'favorites', array( __CLASS__, 'renderFavorites' ) );
 
 		return true;
@@ -61,7 +58,7 @@ class FavoritesHooks {
 		return true;
 	}
 
-	public static function onArticleDeleteComplete(&$article, &$user, $reason, $id ){
+	public static function onArticleDeleteComplete( &$article, &$user, $reason, $id ) {
 		$dbw = wfGetDB( DB_PRIMARY );
 		$dbw->delete( 'favoritelist', array(
 				'fl_namespace' => $article->mTitle->getNamespace(),

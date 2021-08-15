@@ -30,18 +30,17 @@ class ApiFavorite extends ApiBase {
 			$res['unfavorited'] = '';
 			$res['message'] = $this->msg( 'removedfavoritetext', $title->getPrefixedText() )->title( $title )->parseAsBlock();
 			$success = false;
-			//$success = UnfavoriteAction::doUnfavorite( $title, $user );
+			// $success = UnfavoriteAction::doUnfavorite( $title, $user );
 		} else {
 			$res['favorited'] = '';
 			$res['message'] = $this->msg( 'addedfavoritetext', $title->getPrefixedText() )->title( $title )->parseAsBlock();
 			$success = false;
-			//$success = FavAction::doFavorite( $title, $user );
+			// $success = FavAction::doFavorite( $title, $user );
 		}
 		if ( !$success ) {
 			$this->dieUsageMsg( 'hookaborted' );
 		}
 		$this->getResult()->addValue( null, $this->getModuleName(), $res );
-
 	}
 
 	public function mustBePosted() {
@@ -53,9 +52,9 @@ class ApiFavorite extends ApiBase {
 	}
 
 	// since this makes changes the database, we should use this, but I just can't get it to work.
- 	//public function needsToken() {
- 	//	return 'favorite';
- 	//}
+	//public function needsToken() {
+	//	return 'favorite';
+	//}
 
 	//public function getTokenSalt() {
 	//	return 'favorite';
@@ -71,9 +70,9 @@ class ApiFavorite extends ApiBase {
 				ApiBase::PARAM_REQUIRED => true
 			),
 			'unfavorite' => false,
- 			//'token' => array(
- 			//	ApiBase::PARAM_TYPE => 'string',
- 			//	ApiBase::PARAM_REQUIRED => true
+			// 'token' => array(
+			//	ApiBase::PARAM_TYPE => 'string',
+			//	ApiBase::PARAM_REQUIRED => true
 			//),
 		);
 	}

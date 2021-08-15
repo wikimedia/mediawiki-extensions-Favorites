@@ -1,39 +1,40 @@
 <?php
 class Favorites {
 	var $user;
-	function favoritesLinks(&$sktemplate, &$links) {
+
+	function favoritesLinks( &$sktemplate, &$links ) {
 		global $wgUseIconFavorite;
 		// $context = $sktemplate->getContext();
 		// $wgUseIconFavorite = true;
-		$this->user = $user = $sktemplate->getUser ();
-		if ($user->isAnon ()) {
+		$this->user = $user = $sktemplate->getUser();
+		if ( $user->isAnon() ) {
 			// do nothing
 			return false;
 		}
-		
-		$title = $sktemplate->getTitle ();
-		
+
+		$title = $sktemplate->getTitle();
+
 		// See if this object even exists - if the user can't read it, the object doesn't get created.
-		if (is_object ( $title )) {
-			$ns = $title->getNamespace ();
-			$titleKey = $title->getDBkey ();
+		if ( is_object( $title ) ) {
+			$ns = $title->getNamespace();
+			$titleKey = $title->getDBkey();
 		} else {
 			return false;
 		}
-		$mode = $this->inFavorites ( $ns, $titleKey ) ? 'unfavorite' : 'favorite';
-		if ($wgUseIconFavorite) {
-			
+		$mode = $this->inFavorites( $ns, $titleKey ) ? 'unfavorite' : 'favorite';
+		if ( $wgUseIconFavorite ) {
+
 			$class = 'icon ';
 			$place = 'views';
 			$text = '';
 		} else {
 			$class = '';
-			$text = $sktemplate->msg ( $mode )->text ();
+			$text = $sktemplate->msg( $mode )->text();
 			$place = 'actions';
 		}
-		
-		$token = $this->getFavoriteToken ( $title, $user, $mode );
-		
+
+		$token = $this->getFavoriteToken( $title, $user, $mode );
+
 		// from streams:
 		// $fields .= Xml::input ( 'touserid', false, false, array (
 		// 'type' => 'text',
@@ -47,34 +48,35 @@ class Favorites {
 		// 'method' => 'post',
 		// 'name' => 'pushform'
 		// );
-		
-		$links [$place] [$mode] = array (
+
+		$links[$place][$mode] = array(
 				'class' => $class,
-				'text' => $text, // uses 'favorite' or 'unfavorite' message
-				                 // 'href' => $this->getTitle()->getLocalURL( array( 'action' => $mode) ) //'href' => $favTitle->getLocalUrl( 'action=' . $mode )
-				'href' => $title->getLocalURL ( array (
+				'text' => $text,
+				// uses 'favorite' or 'unfavorite' message
+				// 'href' => $this->getTitle()->getLocalURL( array( 'action' => $mode) ) //'href' => $favTitle->getLocalUrl( 'action=' . $mode )
+				'href' => $title->getLocalURL( array(
 						'action' => $mode,
-						'token' => $token 
-				) ) 
+						'token' => $token
+				) )
 		);
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Is this item in the user's favorite list?
 	 */
-	private function inFavorites($ns, $titleKey) {
-		$dbr = wfGetDB ( DB_REPLICA );
-		$res = $dbr->select ( 'favoritelist', 1, array (
-				'fl_user' => $this->user->getId (),
+	private function inFavorites( $ns, $titleKey ) {
+		$dbr = wfGetDB( DB_REPLICA );
+		$res = $dbr->select( 'favoritelist', 1, array(
+				'fl_user' => $this->user->getId(),
 				'fl_namespace' => $ns,
-				'fl_title' => $titleKey 
+				'fl_title' => $titleKey
 		), __METHOD__ );
-		$isfavorited = ($dbr->numRows ( $res ) > 0) ? true : false;
+		$isfavorited = ( $dbr->numRows( $res ) > 0 ) ? true : false;
 		return $isfavorited;
 	}
-	
+
 	/**
 	 * Get token to favorite (or unfavorite) a page for a user
 	 *
@@ -86,20 +88,20 @@ class Favorites {
 	 *        	Optionally override the action to 'unfavorite'
 	 * @return string Token
 	 */
-	function getFavoriteToken(Title $title, User $user, $action = 'favorite') {
-		if ($action != 'unfavorite') {
+	function getFavoriteToken( Title $title, User $user, $action = 'favorite' ) {
+		if ( $action != 'unfavorite' ) {
 			$action = 'favorite';
 		}
-		$salt = array (
+		$salt = array(
 				$action,
-				$title->getDBkey () 
+				$title->getDBkey()
 		);
-		
+
 		// This token stronger salted and not compatible with ApiFavorite
 		// It's title/action specific because index.php is GET and API is POST
-		return $user->getEditToken ( $salt );
+		return $user->getEditToken( $salt );
 	}
-	
+
 	/**
 	 * Get token to unfavorite (or favorite) a page for a user
 	 *
@@ -111,10 +113,10 @@ class Favorites {
 	 *        	Optionally override the action to 'favorite'
 	 * @return string Token
 	 */
-	function getUnfavoriteToken(Title $title, User $user, $action = 'unfavorite') {
-		return self::getFavoriteToken ( $title, $user, $action );
+	function getUnfavoriteToken( Title $title, User $user, $action = 'unfavorite' ) {
+		return self::getFavoriteToken( $title, $user, $action );
 	}
-	
+
 	/**
 	 * Check if the given title already is favorited by the user, and if so
 	 * add favorite on a new title.
@@ -125,59 +127,57 @@ class Favorites {
 	 * @param $nt Title:
 	 *        	page title to add favorite on
 	 */
-	public static function duplicateEntries($ot, $nt) {
-		Favorites::doDuplicateEntries ( $ot->getSubjectPage (), $nt->getSubjectPage () );
+	public static function duplicateEntries( $ot, $nt ) {
+		Favorites::doDuplicateEntries( $ot->getSubjectPage(), $nt->getSubjectPage() );
 	}
-	
+
 	/**
 	 * Handle duplicate entries.
 	 * Backend for duplicateEntries().
 	 */
-	private static function doDuplicateEntries($ot, $nt) {
-		$oldnamespace = $ot->getNamespace ();
-		$newnamespace = $nt->getNamespace ();
-		$oldtitle = $ot->getDBkey ();
-		$newtitle = $nt->getDBkey ();
-		
-		$dbw = wfGetDB ( DB_PRIMARY );
-		$res = $dbw->select ( 'favoritelist', 'fl_user', array (
+	private static function doDuplicateEntries( $ot, $nt ) {
+		$oldnamespace = $ot->getNamespace();
+		$newnamespace = $nt->getNamespace();
+		$oldtitle = $ot->getDBkey();
+		$newtitle = $nt->getDBkey();
+
+		$dbw = wfGetDB( DB_PRIMARY );
+		$res = $dbw->select( 'favoritelist', 'fl_user', array(
 				'fl_namespace' => $oldnamespace,
-				'fl_title' => $oldtitle 
+				'fl_title' => $oldtitle
 		), __METHOD__, 'FOR UPDATE' );
 		// Construct array to replace into the favoritelist
-		$values = array ();
-		while ( $s = $dbw->fetchObject ( $res ) ) {
-			$values [] = array (
+		$values = array();
+		while ( $s = $dbw->fetchObject( $res ) ) {
+			$values[] = array(
 					'fl_user' => $s->fl_user,
 					'fl_namespace' => $newnamespace,
-					'fl_title' => $newtitle 
+					'fl_title' => $newtitle
 			);
 		}
-		$dbw->freeResult ( $res );
-		
-		if (empty ( $values )) {
+		$dbw->freeResult( $res );
+
+		if ( empty( $values ) ) {
 			// Nothing to do
 			return true;
 		}
-		
+
 		// Perform replace
 		// Note that multi-row replace is very efficient for MySQL but may be inefficient for
 		// some other DBMSes, mostly due to poor simulation by us
-		$dbw->replace ( 'favoritelist', array (
-				array (
+		$dbw->replace( 'favoritelist', array(
+				array(
 						'fl_user',
 						'fl_namespace',
-						'fl_title' 
-				) 
+						'fl_title'
+				)
 		), $values, __METHOD__ );
-		
+
 		// Delete the old item - we don't need to have the old page on the list of favorites.
-		$dbw->delete ( 'favoritelist', array (
+		$dbw->delete( 'favoritelist', array(
 				'fl_namespace' => $oldnamespace,
-				'fl_title' => $oldtitle 
+				'fl_title' => $oldtitle
 		), $fname = 'Database::delete' );
 		return true;
 	}
 }
-
-
