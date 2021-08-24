@@ -10,20 +10,23 @@ use MediaWiki\MediaWikiServices;
  */
 class FavoritelistEditor {
 
-	/**
-	 * Editing modes
-	 */
+	/** Editing modes */
+
+	/** @var int */
 	const EDIT_CLEAR = 1;
+	/** @var int */
 	const EDIT_RAW = 2;
+	/** @var int */
 	const EDIT_NORMAL = 3;
 
 	/**
 	 * Main execution point
 	 *
-	 * @param $user User
-	 * @param $output OutputPage
-	 * @param $request WebRequest
-	 * @param $mode int
+	 * @param User $user
+	 * @param OutputPage $output
+	 * @param WebRequest $request
+	 * @param int $mode
+	 * @throws ReadOnlyError
 	 */
 	public function execute( $user, $output, $request, $mode ) {
 		if ( wfReadOnly() ) {
@@ -81,8 +84,8 @@ class FavoritelistEditor {
 	/**
 	 * Check the edit token from a form submission
 	 *
-	 * @param $request WebRequest
-	 * @param $user User
+	 * @param WebRequest $request
+	 * @param User $user
 	 * @return bool
 	 */
 	private function checkToken( $request, $user ) {
@@ -93,7 +96,7 @@ class FavoritelistEditor {
 	 * Extract a list of titles from a blob of text, returning
 	 * (prefixed) strings; unfavoritable titles are ignored
 	 *
-	 * @param $list mixed
+	 * @param mixed $list
 	 * @return array
 	 */
 	private function extractTitles( $list ) {
@@ -121,8 +124,8 @@ class FavoritelistEditor {
 	 * $titles can be an array of strings or Title objects; the former
 	 * is preferred, since Titles are very memory-heavy
 	 *
-	 * @param $titles An array of strings, or Title objects
-	 * @param $output OutputPage
+	 * @param array $titles An array of strings, or Title objects
+	 * @param OutputPage $output
 	 */
 	private function showTitles( $titles, $output ) {
 		$talk = wfMessage( 'talkpagelinktext' )->text();
@@ -156,12 +159,16 @@ class FavoritelistEditor {
 	/**
 	 * Count the number of titles on a user's favoritelist
 	 *
-	 * @param $user User
+	 * @param User $user
 	 * @return int
 	 */
 	private function countFavoritelist( $user ) {
 		$dbr = wfGetDB( DB_PRIMARY );
-		$res = $dbr->select( 'favoritelist', 'COUNT(*) AS count', [ 'fl_user' => $user->getId() ], __METHOD__ );
+		$res = $dbr->select(
+			'favoritelist', 'COUNT(*) AS count',
+			[ 'fl_user' => $user->getId() ],
+			__METHOD__
+		);
 		$row = $dbr->fetchObject( $res );
 		return ceil( $row->count );
 	}
@@ -170,7 +177,7 @@ class FavoritelistEditor {
 	 * Prepare a list of titles on a user's favoritelist
 	 * and return an array of (prefixed) strings
 	 *
-	 * @param $user User
+	 * @param User $user
 	 * @return array
 	 */
 	private function getFavoritelist( $user ) {
@@ -201,7 +208,7 @@ class FavoritelistEditor {
 	 * and return as a two-dimensional array with namespace, title and
 	 * redirect status
 	 *
-	 * @param $user User
+	 * @param User $user
 	 * @return array
 	 */
 	private function getFavoritelistInfo( $user ) {
@@ -237,8 +244,8 @@ class FavoritelistEditor {
 	 * Show a message indicating the number of items on the user's favoritelist,
 	 * and return this count for additional checking
 	 *
-	 * @param $output OutputPage
-	 * @param $user User
+	 * @param OutputPage $output
+	 * @param User $user
 	 * @return int
 	 */
 	private function showItemCount( $output, $user ) {
@@ -254,7 +261,7 @@ class FavoritelistEditor {
 	/**
 	 * Remove all titles from a user's favoritelist
 	 *
-	 * @param $user User
+	 * @param User $user
 	 */
 	private function clearFavoritelist( $user ) {
 		$dbw = wfGetDB( DB_PRIMARY );
@@ -267,8 +274,8 @@ class FavoritelistEditor {
 	 * $titles can be an array of strings or Title objects; the former
 	 * is preferred, since Titles are very memory-heavy
 	 *
-	 * @param $titles An array of strings, or Title objects
-	 * @param $user User
+	 * @param array $titles An array of strings, or Title objects
+	 * @param User $user
 	 */
 	private function favoriteTitles( $titles, $user ) {
 		$dbw = wfGetDB( DB_PRIMARY );
@@ -295,8 +302,8 @@ class FavoritelistEditor {
 	 * $titles can be an array of strings or Title objects; the former
 	 * is preferred, since Titles are very memory-heavy
 	 *
-	 * @param $titles An array of strings, or Title objects
-	 * @param $user User
+	 * @param array $titles An array of strings, or Title objects
+	 * @param User $user
 	 */
 	private function unfavoriteTitles( $titles, $user ) {
 		$dbw = wfGetDB( DB_PRIMARY );
@@ -322,8 +329,8 @@ class FavoritelistEditor {
 	/**
 	 * Show the standard favoritelist editing form
 	 *
-	 * @param $output OutputPage
-	 * @param $user User
+	 * @param OutputPage $output
+	 * @param User $user
 	 */
 	private function showNormalForm( $output, $user ) {
 		if ( $this->showItemCount( $output, $user ) > 0 ) {
@@ -345,7 +352,7 @@ class FavoritelistEditor {
 	 * title selection checkboxes and stuff.  Also generates a table of
 	 * contents if there's more than one heading.
 	 *
-	 * @param $user User
+	 * @param User $user
 	 */
 	private function buildRemoveList( $user ) {
 		$list = "";
@@ -376,21 +383,23 @@ class FavoritelistEditor {
 	/**
 	 * Get the correct "heading" for a namespace
 	 *
-	 * @param $namespace int
+	 * @param int $namespace
 	 * @return string
 	 */
 	private function getNamespaceHeading( $namespace ) {
 		return $namespace == NS_MAIN
 			? wfMessage( 'blanknamespace' )->text()
-			: htmlspecialchars( MediaWikiServices::getInstance()->getContentLanguage()->getFormattedNsText( $namespace ) );
+			: htmlspecialchars(
+				MediaWikiServices::getInstance()->getContentLanguage()->getFormattedNsText( $namespace )
+			);
 	}
 
 	/**
 	 * Build a single list item containing a check box selecting a title
 	 * and a link to that title, with various additional bits
 	 *
-	 * @param $title Title
-	 * @param $redirect bool
+	 * @param Title $title
+	 * @param bool $redirect
 	 * @return string
 	 */
 	private function buildRemoveLine( $title, $redirect ) {
@@ -437,8 +446,8 @@ class FavoritelistEditor {
 	/**
 	 * Show a form for editing the favoritelist in "raw" mode
 	 *
-	 * @param $output OutputPage
-	 * @param $user User
+	 * @param OutputPage $output
+	 * @param User $user
 	 */
 	public function showRawForm( $output, $user ) {
 		$this->showItemCount( $output, $user );
@@ -466,8 +475,8 @@ class FavoritelistEditor {
 	 * Determine whether we are editing the favoritelist, and if so, what
 	 * kind of editing operation
 	 *
-	 * @param $request WebRequest
-	 * @param $par mixed
+	 * @param WebRequest $request
+	 * @param mixed $par
 	 * @return int
 	 */
 	public static function getMode( $request, $par ) {
