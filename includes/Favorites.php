@@ -3,7 +3,12 @@ class Favorites {
 	/** @var User */
 	private $user;
 
-	function favoritesLinks( &$sktemplate, &$links ) {
+	/**
+	 * @param SkinTemplate &$sktemplate
+	 * @param array &$links
+	 * @return bool
+	 */
+	public function favoritesLinks( &$sktemplate, &$links ) {
 		global $wgUseIconFavorite;
 		// $context = $sktemplate->getContext();
 		// $wgUseIconFavorite = true;
@@ -24,7 +29,6 @@ class Favorites {
 		}
 		$mode = $this->inFavorites( $ns, $titleKey ) ? 'unfavorite' : 'favorite';
 		if ( $wgUseIconFavorite ) {
-
 			$class = 'icon ';
 			$place = 'views';
 			$text = '';
@@ -54,7 +58,8 @@ class Favorites {
 				'class' => $class,
 				'text' => $text,
 				// uses 'favorite' or 'unfavorite' message
-				// 'href' => $this->getTitle()->getLocalURL( array( 'action' => $mode) ) //'href' => $favTitle->getLocalUrl( 'action=' . $mode )
+				// 'href' => $this->getTitle()->getLocalURL( array( 'action' => $mode) )
+				// 'href' => $favTitle->getLocalUrl( 'action=' . $mode )
 				'href' => $title->getLocalURL( [
 						'action' => $mode,
 						'token' => $token
@@ -66,6 +71,10 @@ class Favorites {
 
 	/**
 	 * Is this item in the user's favorite list?
+	 *
+	 * @param int $ns
+	 * @param string $titleKey
+	 * @return bool
 	 */
 	private function inFavorites( $ns, $titleKey ) {
 		$dbr = wfGetDB( DB_REPLICA );
@@ -74,7 +83,7 @@ class Favorites {
 				'fl_namespace' => $ns,
 				'fl_title' => $titleKey
 		], __METHOD__ );
-		$isfavorited = ( $dbr->numRows( $res ) > 0 ) ? true : false;
+		$isfavorited = $dbr->numRows( $res ) > 0;
 		return $isfavorited;
 	}
 
@@ -89,7 +98,7 @@ class Favorites {
 	 *        	Optionally override the action to 'unfavorite'
 	 * @return string Token
 	 */
-	function getFavoriteToken( Title $title, User $user, $action = 'favorite' ) {
+	private function getFavoriteToken( Title $title, User $user, $action = 'favorite' ) {
 		if ( $action != 'unfavorite' ) {
 			$action = 'favorite';
 		}
@@ -114,7 +123,7 @@ class Favorites {
 	 *        	Optionally override the action to 'favorite'
 	 * @return string Token
 	 */
-	function getUnfavoriteToken( Title $title, User $user, $action = 'unfavorite' ) {
+	private function getUnfavoriteToken( Title $title, User $user, $action = 'unfavorite' ) {
 		return self::getFavoriteToken( $title, $user, $action );
 	}
 
@@ -123,10 +132,10 @@ class Favorites {
 	 * add favorite on a new title.
 	 * To be used for page renames and such.
 	 *
-	 * @param $ot Title:
-	 *        	page title to duplicate entries from, if present
-	 * @param $nt Title:
-	 *        	page title to add favorite on
+	 * @param Title $ot
+	 *        	Page title to duplicate entries from, if present
+	 * @param Title $nt
+	 *        	Page title to add favorite on
 	 */
 	public static function duplicateEntries( $ot, $nt ) {
 		self::doDuplicateEntries( $ot->getSubjectPage(), $nt->getSubjectPage() );
@@ -135,6 +144,9 @@ class Favorites {
 	/**
 	 * Handle duplicate entries.
 	 * Backend for duplicateEntries().
+	 *
+	 * @param Title $ot
+	 * @param Title $nt
 	 */
 	private static function doDuplicateEntries( $ot, $nt ) {
 		$oldnamespace = $ot->getNamespace();
