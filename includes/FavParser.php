@@ -5,11 +5,11 @@ use MediaWiki\MediaWikiServices;
 class FavParser {
 
 	/**
-	 * @param $argv
-	 * @param $parser
+	 * @param array $argv
+	 * @param Parser $parser
 	 * @return string
 	 */
-	function wfSpecialFavoritelist( $argv, $parser ) {
+	public function wfSpecialFavoritelist( $argv, $parser ) {
 		$output = '';
 
 		$specialTitle = SpecialPage::getTitleFor( 'Favoritelist' );
