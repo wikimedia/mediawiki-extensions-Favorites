@@ -172,7 +172,7 @@ class Favorites {
 
 		if ( empty( $values ) ) {
 			// Nothing to do
-			return true;
+			return;
 		}
 
 		// Perform replace
@@ -190,7 +190,6 @@ class Favorites {
 		$dbw->delete( 'favoritelist', [
 				'fl_namespace' => $oldnamespace,
 				'fl_title' => $oldtitle
-		], $fname = 'Database::delete' );
-		return true;
+		], 'Database::delete' );
 	}
 }

@@ -12,12 +12,9 @@ class FavoritelistEditor {
 
 	/** Editing modes */
 
-	/** @var int */
-	const EDIT_CLEAR = 1;
-	/** @var int */
-	const EDIT_RAW = 2;
-	/** @var int */
-	const EDIT_NORMAL = 3;
+	private const EDIT_CLEAR = 1;
+	private const EDIT_RAW = 2;
+	private const EDIT_NORMAL = 3;
 
 	/**
 	 * Main execution point
@@ -353,6 +350,7 @@ class FavoritelistEditor {
 	 * contents if there's more than one heading.
 	 *
 	 * @param User $user
+	 * @return string
 	 */
 	private function buildRemoveList( $user ) {
 		$list = "";

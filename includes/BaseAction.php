@@ -25,5 +25,12 @@ abstract class BaseAction extends Action {
 
 	abstract protected function successMessage();
 
+	/**
+	 * @param DBConnRef $dbw
+	 * @param int $subject
+	 * @param User $user
+	 * @param Title $title
+	 * @return bool
+	 */
 	abstract protected function doAction( DBConnRef $dbw, int $subject, User $user, Title $title );
 }

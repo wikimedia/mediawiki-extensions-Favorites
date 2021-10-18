@@ -14,11 +14,14 @@ use MediaWiki\MediaWikiServices;
  */
 class SpecialFavoritelist extends SpecialPage {
 
-	function __construct() {
+	public function __construct() {
 		parent::__construct( 'Favoritelist' );
 	}
 
-	function execute( $par ) {
+	/**
+	 * @param string|null $par
+	 */
+	public function execute( $par ) {
 		$context = $this->getContext();
 		$vwfav = new ViewFavorites( $context );
 
@@ -28,6 +31,9 @@ class SpecialFavoritelist extends SpecialPage {
 		$vwfav->wfSpecialFavoritelist( $par );
 	}
 
+	/**
+	 * @return string
+	 */
 	protected function getGroupName() {
 		return 'other';
 	}
@@ -35,21 +41,29 @@ class SpecialFavoritelist extends SpecialPage {
 
 class ViewFavorites {
 
-	private $context;
+	/** @var User */
 	private $user;
+	/** @var OutputPage */
 	private $out;
+	/** @var WebRequest */
 	private $request;
+	/** @var Language */
 	private $lang;
 
-	function __construct( $context ) {
-		$this->context = $context;
-		$this->out = $this->context->getOutput();
-		$this->request = $this->context->getRequest();
-		$this->lang = $this->context->getLanguage();
-		$this->user = $this->context->getUser();
+	/**
+	 * @param IContextSource $context
+	 */
+	public function __construct( $context ) {
+		$this->out = $context->getOutput();
+		$this->request = $context->getRequest();
+		$this->lang = $context->getLanguage();
+		$this->user = $context->getUser();
 	}
 
-	function wfSpecialFavoritelist( $par ) {
+	/**
+	 * @param string|null $par
+	 */
+	public function wfSpecialFavoritelist( $par ) {
 		global $wgFeedClasses;
 
 		// Add feed links
@@ -104,6 +118,12 @@ class ViewFavorites {
 		$this->viewFavList( $this->user, $this->out, $this->request, $mode );
 	}
 
+	/**
+	 * @param User $user
+	 * @param OutputPage $output
+	 * @param WebRequest $request
+	 * @param int $mode
+	 */
 	private function viewFavList( $user, $output, $request, $mode ) {
 		$uid = $this->user->getId();
 		$output->setPageTitle( wfMessage( 'favoritelist' ) );
@@ -136,8 +156,8 @@ class ViewFavorites {
 	/**
 	 * Check the edit token from a form submission
 	 *
-	 * @param $request WebRequest
-	 * @param $user User
+	 * @param WebRequest $request
+	 * @param User $user
 	 * @return bool
 	 */
 	private function checkToken( $request, $user ) {
@@ -148,8 +168,8 @@ class ViewFavorites {
 	 * Extract a list of titles from a blob of text, returning
 	 * (prefixed) strings; unfavoritable titles are ignored
 	 *
-	 * @param $list mixed
-	 * @return array
+	 * @param string[]|string $list
+	 * @return string[]
 	 */
 	private function extractTitles( $list ) {
 		$titles = [];
@@ -176,9 +196,8 @@ class ViewFavorites {
 	 * $titles can be an array of strings or Title objects; the former
 	 * is preferred, since Titles are very memory-heavy
 	 *
-	 * @param $titles An
-	 *        	array of strings, or Title objects
-	 * @param $output OutputPage
+	 * @param string[]|Title[] $titles
+	 * @param OutputPage $output
 	 */
 	private function showTitles( $titles, $output ) {
 		$talk = wfMessage( 'talkpagelinktext' )->text();
@@ -213,7 +232,7 @@ class ViewFavorites {
 	/**
 	 * Count the number of titles on a user's favoritelist, excluding talk pages
 	 *
-	 * @param $user User
+	 * @param User $user
 	 * @return int
 	 */
 	private function countFavoritelist( $user ) {
@@ -230,7 +249,7 @@ class ViewFavorites {
 	 * and return as a two-dimensional array with namespace, title and
 	 * redirect status
 	 *
-	 * @param $user User
+	 * @param User $user
 	 * @return array
 	 */
 	private function getFavoritelistInfo( $user ) {
@@ -269,20 +288,17 @@ class ViewFavorites {
 	 * $titles can be an array of strings or Title objects; the former
 	 * is preferred, since Titles are very memory-heavy
 	 *
-	 * @param $titles An
-	 *        	array of strings, or Title objects
-	 * @param $user User
+	 * @param string[]|Title[] $titles
+	 * @param User $user
 	 */
 	private function unfavoriteTitles( $titles, $user ) {
 		$dbw = wfGetDB( DB_PRIMARY );
 
 		foreach ( $titles as $title ) {
-
 			if ( !$title instanceof Title ) {
 				$title = Title::newFromText( $title );
 			}
 			if ( $title instanceof Title ) {
-
 				$dbw->delete( 'favoritelist', [
 						'fl_user' => $user->getId(),
 						'fl_namespace' => ( $title->getNamespace() | 1 ),
@@ -300,8 +316,8 @@ class ViewFavorites {
 	/**
 	 * Show the standard favoritelist editing form
 	 *
-	 * @param $output OutputPage
-	 * @param $user User
+	 * @param OutputPage $output
+	 * @param User $user
 	 */
 	private function showNormalForm( $output, $user ) {
 		if ( ( $count = $this->countFavoritelist( $user ) ) > 0 ) {
@@ -325,7 +341,8 @@ class ViewFavorites {
 	 * Also generates a table of
 	 * contents if there's more than one heading.
 	 *
-	 * @param $user User
+	 * @param User $user
+	 * @return string
 	 */
 	private function buildRemoveList( $user ) {
 		$list = "";
@@ -357,7 +374,7 @@ class ViewFavorites {
 	/**
 	 * Get the correct "heading" for a namespace
 	 *
-	 * @param $namespace int
+	 * @param int $namespace
 	 * @return string
 	 */
 	private function getNamespaceHeading( $namespace ) {
@@ -370,8 +387,8 @@ class ViewFavorites {
 	 * Build a single list item containing a check box selecting a title
 	 * and a link to that title, with various additional bits
 	 *
-	 * @param $title Title
-	 * @param $redirect bool
+	 * @param Title $title
+	 * @param bool $redirect
 	 * @return string
 	 */
 	private function buildRemoveLine( $title, $redirect ) {
@@ -396,10 +413,13 @@ class ViewFavorites {
 			] );
 		}
 		if ( $title->getNamespace() == NS_USER && !$title->isSubpage() ) {
-			$tools[] = Linker::link( SpecialPage::getTitleFor( 'Contributions', $title->getText() ), wfMessage( 'contributions' )->text(), [], [], [
-					'known',
-					'noclasses'
-			] );
+			$tools[] = Linker::link(
+				SpecialPage::getTitleFor( 'Contributions', $title->getText() ),
+				wfMessage( 'contributions' )->text(),
+				[],
+				[],
+				[ 'known', 'noclasses' ]
+			);
 		}
 
 		if ( $showlinks ) {
