@@ -67,11 +67,12 @@ class ViewFavorites {
 		global $wgFeedClasses;
 
 		// Add feed links
-		$flToken = $this->user->getOption( 'favoritelisttoken' );
+		$userOptionsManager = MediaWikiServices::getInstance()->getUserOptionsManager();
+		$flToken = $userOptionsManager->getOption( $this->user, 'favoritelisttoken' );
 		if ( !$flToken ) {
 			$flToken = sha1( mt_rand() . microtime( true ) );
-			$this->user->setOption( 'favoritelisttoken', $flToken );
-			$this->user->saveSettings();
+			$userOptionsManager->setOption( $this->user, 'favoritelisttoken', $flToken );
+			$userOptionsManager->saveOptions( $this->user );
 		}
 
 		$apiParams = [
