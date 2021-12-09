@@ -1,6 +1,7 @@
 <?php
 
 use MediaWiki\MediaWikiServices;
+use MediaWiki\User\UserIdentity;
 
 class FavParser {
 
@@ -25,11 +26,11 @@ class FavParser {
 			$output .= $this->editlink( $argv );
 			return $output;
 		} else {
-			$user = $parser->getUser();
+			$user = $parser->getUserIdentity();
 		}
 
 		# Anons don't get a favoritelist
-		if ( $user->isAnon() ) {
+		if ( !$user->isRegistered() ) {
 			$llink = Linker::linkKnown(
 				SpecialPage::getTitleFor( 'Userlogin' ),
 				wfMessage( 'loginreqlink' )->text(),
@@ -48,7 +49,7 @@ class FavParser {
 	}
 
 	/**
-	 * @param User $user
+	 * @param UserIdentity $user
 	 * @param OutputPage $output
 	 * @return string
 	 */
@@ -83,7 +84,7 @@ class FavParser {
 	/**
 	 * Count the number of titles on a user's favoritelist, excluding talk pages
 	 *
-	 * @param User $user
+	 * @param UserIdentity $user
 	 * @return int
 	 */
 	private function countFavoritelist( $user ) {
@@ -98,7 +99,7 @@ class FavParser {
 	 * and return as a two-dimensional array with namespace, title and
 	 * redirect status
 	 *
-	 * @param User $user
+	 * @param UserIdentity $user
 	 * @return array
 	 */
 	private function getFavoritelistInfo( $user ) {
@@ -135,7 +136,7 @@ class FavParser {
 	 * Show the standard favoritelist
 	 *
 	 * @param OutputPage $output
-	 * @param User $user
+	 * @param UserIdentity $user
 	 * @return string
 	 */
 	private function showNormalForm( $output, $user ) {
@@ -151,7 +152,7 @@ class FavParser {
 	/**
 	 * Build part of the standard favoritelist
 	 *
-	 * @param User $user
+	 * @param UserIdentity $user
 	 * @return string
 	 */
 	private function buildRemoveList( $user ) {
