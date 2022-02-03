@@ -161,12 +161,11 @@ class FavoritelistEditor {
 	 */
 	private function countFavoritelist( $user ) {
 		$dbr = wfGetDB( DB_PRIMARY );
-		$res = $dbr->select(
+		$row = $dbr->selectRow(
 			'favoritelist', 'COUNT(*) AS count',
 			[ 'fl_user' => $user->getId() ],
 			__METHOD__
 		);
-		$row = $dbr->fetchObject( $res );
 		return ceil( $row->count );
 	}
 
@@ -189,13 +188,12 @@ class FavoritelistEditor {
 			__METHOD__
 		);
 		if ( $res->numRows() > 0 ) {
-			while ( $row = $res->fetchObject() ) {
+			foreach ( $res as $row ) {
 				$title = Title::makeTitleSafe( $row->fl_namespace, $row->fl_title );
 				if ( $title instanceof Title && !$title->isTalkPage() ) {
 					$list[] = $title->getPrefixedText();
 				}
 			}
-			$res->free();
 		}
 		return $list;
 	}
@@ -217,9 +215,9 @@ class FavoritelistEditor {
 			FROM {$favoritelist} LEFT JOIN {$page} ON ( fl_namespace = page_namespace
 			AND fl_title = page_title ) WHERE fl_user = {$uid}";
 		$res = $dbr->query( $sql, __METHOD__ );
-		if ( $res && $dbr->numRows( $res ) > 0 ) {
+		if ( $res->numRows() > 0 ) {
 			$cache = MediaWikiServices::getInstance()->getLinkCache();
-			while ( $row = $dbr->fetchObject( $res ) ) {
+			foreach ( $res as $row ) {
 				$title = Title::makeTitleSafe( $row->fl_namespace, $row->fl_title );
 				if ( $title instanceof Title ) {
 					// Update the link cache while we're at it

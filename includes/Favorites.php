@@ -83,7 +83,7 @@ class Favorites {
 				'fl_namespace' => $ns,
 				'fl_title' => $titleKey
 		], __METHOD__ );
-		$isfavorited = $dbr->numRows( $res ) > 0;
+		$isfavorited = $res->numRows() > 0;
 		return $isfavorited;
 	}
 
@@ -161,14 +161,13 @@ class Favorites {
 		], __METHOD__, 'FOR UPDATE' );
 		// Construct array to replace into the favoritelist
 		$values = [];
-		while ( $s = $dbw->fetchObject( $res ) ) {
+		foreach ( $res as $s ) {
 			$values[] = [
 					'fl_user' => $s->fl_user,
 					'fl_namespace' => $newnamespace,
 					'fl_title' => $newtitle
 			];
 		}
-		$dbw->freeResult( $res );
 
 		if ( empty( $values ) ) {
 			// Nothing to do

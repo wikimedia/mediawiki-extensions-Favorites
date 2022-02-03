@@ -89,8 +89,7 @@ class FavParser {
 	 */
 	private function countFavoritelist( $user ) {
 		$dbr = wfGetDB( DB_PRIMARY );
-		$res = $dbr->select( 'favoritelist', 'COUNT(fl_user) AS count', [ 'fl_user' => $user->getId() ], __METHOD__ );
-		$row = $dbr->fetchObject( $res );
+		$row = $dbr->selectRow( 'favoritelist', 'COUNT(fl_user) AS count', [ 'fl_user' => $user->getId() ], __METHOD__ );
 		return ceil( $row->count );
 	}
 
@@ -111,9 +110,9 @@ class FavParser {
 			FROM {$favoritelist} LEFT JOIN {$page} ON ( fl_namespace = page_namespace
 			AND fl_title = page_title ) WHERE fl_user = {$uid}";
 		$res = $dbr->query( $sql, __METHOD__ );
-		if ( $res && $dbr->numRows( $res ) > 0 ) {
+		if ( $res->numRows() > 0 ) {
 			$cache = MediaWikiServices::getInstance()->getLinkCache();
-			while ( $row = $dbr->fetchObject( $res ) ) {
+			foreach ( $res as $row ) {
 				$title = Title::makeTitleSafe( $row->fl_namespace, $row->fl_title );
 				if ( $title instanceof Title ) {
 					// Update the link cache while we're at it
