@@ -26,7 +26,7 @@ class FavoritelistEditor {
 	 * @throws ReadOnlyError
 	 */
 	public function execute( $user, $output, $request, $mode ) {
-		if ( wfReadOnly() ) {
+		if ( MediaWikiServices::getInstance()->getReadOnlyMode()->isReadOnly() ) {
 			throw new ReadOnlyError;
 		}
 		switch ( $mode ) {
