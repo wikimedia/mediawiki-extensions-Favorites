@@ -22,8 +22,7 @@ class SpecialFavoritelist extends SpecialPage {
 	 * @param string|null $par
 	 */
 	public function execute( $par ) {
-		$context = $this->getContext();
-		$vwfav = new ViewFavorites( $context );
+		$vwfav = new ViewFavorites( $this->getContext(), $this->getLinkRenderer() );
 
 		$this->setHeaders();
 		$param = $this->getRequest()->getText( 'param' );
@@ -49,15 +48,19 @@ class ViewFavorites {
 	private $request;
 	/** @var Language */
 	private $lang;
+	/** @var LinkRenderer */
+	private $mLinkRenderer;
 
 	/**
 	 * @param IContextSource $context
+	 * @param LinkRenderer $linkRenderer
 	 */
-	public function __construct( $context ) {
+	public function __construct( $context, $linkRenderer ) {
 		$this->out = $context->getOutput();
 		$this->request = $context->getRequest();
 		$this->lang = $context->getLanguage();
 		$this->user = $context->getUser();
+		$this->mLinkRenderer = $linkRenderer;
 	}
 
 	/**
@@ -97,9 +100,14 @@ class ViewFavorites {
 		// Anons don't get a favoritelist
 		if ( $this->user->isAnon() ) {
 			$this->out->setPageTitle( wfMessage( 'favoritenologin' ) );
-			$llink = Linker::linkKnown( SpecialPage::getTitleFor( 'Userlogin' ), wfMessage( 'loginreqlink' )->text(), [], [
+			$llink = $this->mLinkRenderer->makeLink(
+				SpecialPage::getTitleFor( 'Userlogin' ),
+				wfMessage( 'loginreqlink' )->text(),
+				[],
+				[
 					'returnto' => $specialTitle->getPrefixedText()
-			] );
+				]
+			);
 			$this->out->addHTML( wfMessage( 'favoritelistanontext', $llink )->text() );
 			return;
 		}
@@ -223,8 +231,7 @@ class ViewFavorites {
 				$title = Title::newFromText( $title );
 			}
 			if ( $title instanceof Title ) {
-				$output->addHTML( "<li>" . Linker::link( $title ) .
-				"</li>\n" );
+				$output->addHTML( "<li>" . $this->mLinkRenderer->makeLink( $title ) . "</li>\n" );
 			}
 		}
 		$output->addHTML( "</ul>\n" );
@@ -395,7 +402,7 @@ class ViewFavorites {
 		// In case the user adds something unusual to their list using the raw editor
 		// We moved the Tools array completely into the "if( $title->exists() )" section.
 		$showlinks = false;
-		$link = Linker::link( $title );
+		$link = $this->mLinkRenderer->makeLink( $title );
 		if ( $redirect ) {
 			$link = '<span class="favoritelistredir">' . $link . '</span>';
 		}
@@ -403,22 +410,19 @@ class ViewFavorites {
 		if ( $title->exists() ) {
 			$showlinks = true;
 			if ( $title->canHaveTalkPage() ) {
-				$tools[] = Linker::link( $title->getTalkPage(), wfMessage( 'talkpagelinktext' )->text() );
+				$tools[] = $this->mLinkRenderer->makeLink( $title->getTalkPage(), wfMessage( 'talkpagelinktext' )->text() );
 			}
-			$tools[] = Linker::link( $title, wfMessage( 'history_short' )->text(), [], [
-					'action' => 'history'
-			], [
-					'known',
-					'noclasses'
-			] );
+			$tools[] = $this->mLinkRenderer->makeLink(
+				$title,
+				wfMessage( 'history_short' )->text(),
+				[],
+				[ 'action' => 'history' ]
+			);
 		}
 		if ( $title->getNamespace() == NS_USER && !$title->isSubpage() ) {
-			$tools[] = Linker::link(
+			$tools[] = $this->mLinkRenderer->makeKnownLink(
 				SpecialPage::getTitleFor( 'Contributions', $title->getText() ),
-				wfMessage( 'contributions' )->text(),
-				[],
-				[],
-				[ 'known', 'noclasses' ]
+				wfMessage( 'contributions' )->text()
 			);
 		}
 

@@ -31,7 +31,7 @@ class FavParser {
 
 		# Anons don't get a favoritelist
 		if ( !$user->isRegistered() ) {
-			$llink = Linker::linkKnown(
+			$llink = MediaWikiServices::getInstance()->getLinkRenderer()->makeKnownLink(
 				SpecialPage::getTitleFor( 'Userlogin' ),
 				wfMessage( 'loginreqlink' )->text(),
 				[],
@@ -70,12 +70,9 @@ class FavParser {
 		if ( array_key_exists( 'editlink', $argv ) && $argv['editlink'] ) {
 			# Add an edit link if you want it:
 			$output = "<div id='contentSub'><br>" .
-				Linker::link(
+				MediaWikiServices::getInstance()->getLinkRenderer()->makeLink(
 					SpecialPage::getTitleFor( 'Favoritelist', 'edit' ),
-					wfMessage( "favoritelisttools-edit" )->escaped(),
-					[],
-					[],
-					[ 'known', 'noclasses' ]
+					wfMessage( "favoritelisttools-edit" )->text()
 				) . "</div>";
 		}
 		return $output;
@@ -175,7 +172,7 @@ class FavParser {
 	 * @return string
 	 */
 	private function buildRemoveLine( $title, $redirect ) {
-		$link = Linker::link( $title );
+		$link = MediaWikiServices::getInstance()->getLinkRenderer()->makeLink( $title );
 		if ( $redirect ) {
 			$link = '<span class="favoritelistredir">' . $link . '</span>';
 		}

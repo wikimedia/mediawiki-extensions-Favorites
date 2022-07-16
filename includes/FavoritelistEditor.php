@@ -147,7 +147,8 @@ class FavoritelistEditor {
 				$title = Title::newFromText( $title );
 			}
 			if ( $title instanceof Title ) {
-				$output->addHTML( "<li>" . Linker::link( $title ) . "</li>\n" );
+				$output->addHTML( "<li>" . MediaWikiServices::getInstance()
+					->getLinkRenderer()->makeLink( $title ) . "</li>\n" );
 			}
 		}
 		$output->addHTML( "</ul>\n" );
@@ -403,7 +404,9 @@ class FavoritelistEditor {
 		# In case the user adds something unusual to their list using the raw editor
 		# We moved the Tools array completely into the "if( $title->exists() )" section.
 		$showlinks = false;
-		$link = Linker::link( $title );
+		$linkRenderer = MediaWikiServices::getInstance()->getLinkRenderer();
+
+		$link = $linkRenderer->makeLink( $title );
 		if ( $redirect ) {
 			$link = '<span class="favoritelistredir">' . $link . '</span>';
 		}
@@ -412,21 +415,17 @@ class FavoritelistEditor {
 			// if ( $title->canHaveTalkPage() ) {
 			// 	$tools[] = Linker::link( $title->getTalkPage(), wfMessage( 'talkpagelinktext' )->text() );
 			// }
-			$tools[] = Linker::link(
+			$tools[] = $linkRenderer->makeKnownLink(
 				$title,
 				wfMessage( 'history_short' )->text(),
 				[],
-				[ 'action' => 'history' ],
-				[ 'known', 'noclasses' ]
+				[ 'action' => 'history' ]
 			);
 		}
 		if ( $title->getNamespace() == NS_USER && !$title->isSubpage() ) {
-			$tools[] = Linker::link(
+			$tools[] = $linkRenderer->makeKnownLink(
 				SpecialPage::getTitleFor( 'Contributions', $title->getText() ),
-				wfMessage( 'contributions' )->text(),
-				[],
-				[],
-				[ 'known', 'noclasses' ]
+				wfMessage( 'contributions' )->text()
 			);
 		}
 
@@ -502,12 +501,9 @@ class FavoritelistEditor {
 		$modes = [ 'view' => false, 'edit' => 'edit', 'raw' => 'raw' ];
 		foreach ( $modes as $mode => $subpage ) {
 			// can use messages 'favoritelisttools-view', 'favoritelisttools-edit', 'favoritelisttools-raw'
-			$tools[] = Linker::link(
+			$tools[] = MediaWikiServices::getInstance()->getLinkRenderer()->makeKnownLink(
 				SpecialPage::getTitleFor( 'Favoritelist', $subpage ),
-				wfMessage( "favoritelisttools-{$mode}" )->text(),
-				[],
-				[],
-				[ 'known', 'noclasses' ]
+				wfMessage( "favoritelisttools-{$mode}" )->text()
 			);
 		}
 		return $wgLang->pipeList( $tools );
