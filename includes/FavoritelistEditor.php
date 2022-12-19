@@ -127,7 +127,7 @@ class FavoritelistEditor {
 	private function showTitles( $titles, $output ) {
 		$talk = wfMessage( 'talkpagelinktext' )->text();
 		// Do a batch existence check
-		$batch = new LinkBatch();
+		$batch = MediaWikiServices::getInstance()->getLinkBatchFactory()->newLinkBatch();
 		foreach ( $titles as $title ) {
 			if ( !$title instanceof Title ) {
 				$title = Title::newFromText( $title );
