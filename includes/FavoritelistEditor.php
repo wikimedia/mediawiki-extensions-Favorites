@@ -303,6 +303,7 @@ class FavoritelistEditor {
 	 */
 	private function unfavoriteTitles( $titles, $user ) {
 		$dbw = wfGetDB( DB_PRIMARY );
+		$hookContainer = MediaWikiServices::getInstance()->getHookContainer();
 		foreach ( $titles as $title ) {
 			if ( !$title instanceof Title ) {
 				$title = Title::newFromText( $title );
@@ -317,7 +318,7 @@ class FavoritelistEditor {
 					]
 				);
 				$article = new Article( $title );
-				Hooks::run( 'UnfavoriteArticleComplete', [ &$user,&$article ] );
+				$hookContainer->run( 'UnfavoriteArticleComplete', [ &$user,&$article ] );
 			}
 		}
 	}

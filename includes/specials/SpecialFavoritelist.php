@@ -300,6 +300,7 @@ class ViewFavorites {
 	 */
 	private function unfavoriteTitles( $titles, $user ) {
 		$dbw = wfGetDB( DB_PRIMARY );
+		$hookContainer = MediaWikiServices::getInstance()->getHookContainer();
 
 		foreach ( $titles as $title ) {
 			if ( !$title instanceof Title ) {
@@ -312,7 +313,7 @@ class ViewFavorites {
 						'fl_title' => $title->getDBkey()
 				], __METHOD__ );
 				$article = new Article( $title );
-				Hooks::run( 'UnfavoriteArticleComplete', [
+				$hookContainer->run( 'UnfavoriteArticleComplete', [
 						&$user,
 						&$article
 				] );
