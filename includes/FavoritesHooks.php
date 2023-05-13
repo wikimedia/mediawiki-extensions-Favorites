@@ -80,7 +80,7 @@ class FavoritesHooks {
 	}
 
 	/**
-	 * @param Page &$article
+	 * @param WikiPage &$article
 	 * @param User &$user
 	 * @param string $reason
 	 * @param int $id
@@ -89,8 +89,8 @@ class FavoritesHooks {
 	public static function onArticleDeleteComplete( &$article, &$user, $reason, $id ) {
 		$dbw = wfGetDB( DB_PRIMARY );
 		$dbw->delete( 'favoritelist', [
-				'fl_namespace' => $article->mTitle->getNamespace(),
-				'fl_title' => $article->mTitle->getDBKey() ],
+				'fl_namespace' => $article->getTitle()->getNamespace(),
+				'fl_title' => $article->getTitle()->getDBKey() ],
 				__METHOD__ );
 		return true;
 	}
