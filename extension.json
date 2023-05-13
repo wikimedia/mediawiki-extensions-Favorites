@@ -73,12 +73,11 @@
 		"remoteExtPath": "Favorites/resources"
 	},
 	"Hooks": {
-		"SkinTemplateNavigation": "FavoritesHooks::onSkinTemplateNavigation",
 		"BeforePageDisplay": "FavoritesHooks::onBeforePageDisplay",
 		"ParserFirstCallInit": "FavoritesHooks::onParserFirstCallInit",
 		"TitleMoveComplete": "FavoritesHooks::onTitleMoveComplete",
 		"ArticleDeleteComplete": "FavoritesHooks::onArticleDeleteComplete",
-		"PersonalUrls": "FavoritesHooks::onPersonalUrls",
+		"SkinTemplateNavigation::Universal": "FavoritesHooks::onSkinTemplateNavigation__Universal",
 		"LoadExtensionSchemaUpdates": "FavoritesHooks::onLoadExtensionSchemaUpdates"
 	},
 	"config": {

@@ -21,7 +21,7 @@ class Favorites {
 		$title = $sktemplate->getTitle();
 
 		// See if this object even exists - if the user can't read it, the object doesn't get created.
-		if ( is_object( $title ) ) {
+		if ( is_object( $title ) && $title->canExist() ) {
 			$ns = $title->getNamespace();
 			$titleKey = $title->getDBkey();
 		} else {

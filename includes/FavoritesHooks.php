@@ -1,18 +1,8 @@
 <?php
 
-class FavoritesHooks {
-	/**
-	 * @param SkinTemplate &$sktemplate
-	 * @param array &$links
-	 */
-	public static function onSkinTemplateNavigation( &$sktemplate, &$links ) {
-		$favClass = new Favorites;
-		$favClass->favoritesLinks( $sktemplate, $links );
-		// if ( $user->isAllowed( 'writeapi' ) ) {
-		// $sktemplate->getOutput()->addModules( 'ext.favorites' );
-		// }
-	}
+// phpcs:disable MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName
 
+class FavoritesHooks {
 	/**
 	 * @param OutputPage &$out
 	 * @param Skin &$skin
@@ -96,21 +86,24 @@ class FavoritesHooks {
 	}
 
 	/**
-	 * @param array &$personal_urls
-	 * @param Title &$title
-	 * @param Skin $skin
+	 * @param SkinTemplate $sktemplate
+	 * @param array &$links
 	 * @return bool
 	 */
-	public static function onPersonalUrls( &$personal_urls, &$title, $skin ) {
+	public static function onSkinTemplateNavigation__Universal( $sktemplate, &$links ) {
 		global $wgFavoritesPersonalURL;
 
-		if ( $wgFavoritesPersonalURL && $skin->getUser()->isRegistered() ) {
+		if ( $wgFavoritesPersonalURL && $sktemplate->getUser()->isRegistered() ) {
+			$personal_urls = &$links['user-menu'];
 			$url[] = [
-				'text' => wfMessage( 'myfavoritelist' )->text(),
+				'text' => $sktemplate->msg( 'myfavoritelist' )->text(),
 				'href' => SpecialPage::getTitleFor( 'Favoritelist' )->getLocalURL()
 			];
 			$personal_urls = wfArrayInsertAfter( $personal_urls, $url, 'watchlist' );
 		}
+
+		$favClass = new Favorites;
+		$favClass->favoritesLinks( $sktemplate, $links );
 
 		return true;
 	}
