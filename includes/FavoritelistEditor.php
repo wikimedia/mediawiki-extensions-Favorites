@@ -211,7 +211,7 @@ class FavoritelistEditor {
 		$titles = [];
 		$dbr = wfGetDB( DB_PRIMARY );
 		$uid = intval( $user->getId() );
-		list( $favoritelist, $page ) = $dbr->tableNamesN( 'favoritelist', 'page' );
+		[ $favoritelist, $page ] = $dbr->tableNamesN( 'favoritelist', 'page' );
 		$sql = "SELECT fl_namespace, fl_title, page_id, page_len, page_is_redirect
 			FROM {$favoritelist} LEFT JOIN {$page} ON ( fl_namespace = page_namespace
 			AND fl_title = page_title ) WHERE fl_user = {$uid}";
@@ -318,7 +318,7 @@ class FavoritelistEditor {
 					]
 				);
 				$article = new Article( $title );
-				$hookContainer->run( 'UnfavoriteArticleComplete', [ &$user,&$article ] );
+				$hookContainer->run( 'UnfavoriteArticleComplete', [ &$user, &$article ] );
 			}
 		}
 	}
@@ -431,7 +431,7 @@ class FavoritelistEditor {
 		}
 
 		if ( $showlinks ) {
-		return Xml::check( 'titles[]', false, [ 'value' => $title->getPrefixedText() ] )
+			return Xml::check( 'titles[]', false, [ 'value' => $title->getPrefixedText() ] )
 			. $link . " (" . $wgLang->pipeList( $tools ) . ")" . "\n<br>";
 		} else {
 			return Xml::check( 'titles[]', false, [ 'value' => $title->getPrefixedText() ] )

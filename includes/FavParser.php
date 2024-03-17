@@ -102,7 +102,7 @@ class FavParser {
 		$titles = [];
 		$dbr = wfGetDB( DB_PRIMARY );
 		$uid = intval( $user->getId() );
-		list( $favoritelist, $page ) = $dbr->tableNamesN( 'favoritelist', 'page' );
+		[ $favoritelist, $page ] = $dbr->tableNamesN( 'favoritelist', 'page' );
 		$sql = "SELECT fl_namespace, fl_title, page_id, page_len, page_is_redirect
 			FROM {$favoritelist} LEFT JOIN {$page} ON ( fl_namespace = page_namespace
 			AND fl_title = page_title ) WHERE fl_user = {$uid}";
