@@ -146,7 +146,7 @@ class ViewFavorites {
 		}
 		$this->showNormalForm( $output, $user );
 
-		$dbr = wfGetDB( DB_REPLICA, 'favoritelist' );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_REPLICA );
 		// $recentchanges = $dbr->tableName( 'recentchanges' );
 
 		$favoritelistCount = $dbr->selectField( 'favoritelist', 'COUNT(fl_user)', [
@@ -244,7 +244,7 @@ class ViewFavorites {
 	 * @return int
 	 */
 	private function countFavoritelist( $user ) {
-		$dbr = wfGetDB( DB_PRIMARY );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$row = $dbr->selectRow( 'favoritelist', 'COUNT(fl_user) AS count', [
 				'fl_user' => $user->getId()
 		], __METHOD__ );
@@ -261,13 +261,16 @@ class ViewFavorites {
 	 */
 	private function getFavoritelistInfo( $user ) {
 		$titles = [];
-		$dbr = wfGetDB( DB_PRIMARY );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$uid = intval( $user->getId() );
-		[ $favoritelist, $page ] = $dbr->tableNamesN( 'favoritelist', 'page' );
-		$sql = "SELECT fl_namespace, fl_title, page_id, page_len, page_is_redirect
-			FROM {$favoritelist} LEFT JOIN {$page} ON ( fl_namespace = page_namespace
-			AND fl_title = page_title ) WHERE fl_user = {$uid}";
-		$res = $dbr->query( $sql, __METHOD__ );
+
+		$res = $dbr->newSelectQueryBuilder()
+			->select( 'fl_namespace', 'fl_title', 'page_id', 'page_len', 'page_is_redirect' )
+			->from( 'favoritelist' )
+			->leftJoin( 'page', null, 'fl_namespace = page_namespace AND fl_title = page_title' )
+			->where( [ 'fl_user' => $uid ] )
+			->fetchResultSet();
+
 		if ( $res->numRows() > 0 ) {
 			$cache = MediaWikiServices::getInstance()->getLinkCache();
 			foreach ( $res as $row ) {
@@ -299,7 +302,7 @@ class ViewFavorites {
 	 * @param User $user
 	 */
 	private function unfavoriteTitles( $titles, $user ) {
-		$dbw = wfGetDB( DB_PRIMARY );
+		$dbw = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$hookContainer = MediaWikiServices::getInstance()->getHookContainer();
 
 		foreach ( $titles as $title ) {

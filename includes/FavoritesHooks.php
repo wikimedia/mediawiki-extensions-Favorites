@@ -2,6 +2,8 @@
 
 // phpcs:disable MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName
 
+use MediaWiki\MediaWikiServices;
+
 class FavoritesHooks {
 	/**
 	 * @param OutputPage &$out
@@ -77,7 +79,7 @@ class FavoritesHooks {
 	 * @return bool
 	 */
 	public static function onArticleDeleteComplete( &$article, &$user, $reason, $id ) {
-		$dbw = wfGetDB( DB_PRIMARY );
+		$dbw = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$dbw->delete( 'favoritelist', [
 				'fl_namespace' => $article->getTitle()->getNamespace(),
 				'fl_title' => $article->getTitle()->getDBKey() ],
