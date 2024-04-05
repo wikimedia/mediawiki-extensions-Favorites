@@ -8,7 +8,7 @@ abstract class BaseAction extends Action {
 		$user = $this->getUser();
 		$out = $this->getOutput();
 
-		$dbw = wfGetDB( DB_PRIMARY );
+		$dbw = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$title = $this->getTitle();
 		$subject =
 			MediaWikiServices::getInstance()

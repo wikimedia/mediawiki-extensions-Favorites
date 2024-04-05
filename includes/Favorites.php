@@ -1,4 +1,7 @@
 <?php
+
+use MediaWiki\MediaWikiServices;
+
 class Favorites {
 	/** @var User */
 	private $user;
@@ -77,7 +80,7 @@ class Favorites {
 	 * @return bool
 	 */
 	private function inFavorites( $ns, $titleKey ) {
-		$dbr = wfGetDB( DB_REPLICA );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_REPLICA );
 		$res = $dbr->select( 'favoritelist', 1, [
 				'fl_user' => $this->user->getId(),
 				'fl_namespace' => $ns,
@@ -154,7 +157,7 @@ class Favorites {
 		$oldtitle = $ot->getDBkey();
 		$newtitle = $nt->getDBkey();
 
-		$dbw = wfGetDB( DB_PRIMARY );
+		$dbw = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$res = $dbw->select( 'favoritelist', 'fl_user', [
 				'fl_namespace' => $oldnamespace,
 				'fl_title' => $oldtitle

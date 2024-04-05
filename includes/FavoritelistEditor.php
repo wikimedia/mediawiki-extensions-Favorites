@@ -161,7 +161,7 @@ class FavoritelistEditor {
 	 * @return int
 	 */
 	private function countFavoritelist( $user ) {
-		$dbr = wfGetDB( DB_PRIMARY );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$row = $dbr->selectRow(
 			'favoritelist', 'COUNT(*) AS count',
 			[ 'fl_user' => $user->getId() ],
@@ -179,7 +179,7 @@ class FavoritelistEditor {
 	 */
 	private function getFavoritelist( $user ) {
 		$list = [];
-		$dbr = wfGetDB( DB_PRIMARY );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$res = $dbr->select(
 			'favoritelist',
 			'*',
@@ -209,13 +209,16 @@ class FavoritelistEditor {
 	 */
 	private function getFavoritelistInfo( $user ) {
 		$titles = [];
-		$dbr = wfGetDB( DB_PRIMARY );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$uid = intval( $user->getId() );
-		[ $favoritelist, $page ] = $dbr->tableNamesN( 'favoritelist', 'page' );
-		$sql = "SELECT fl_namespace, fl_title, page_id, page_len, page_is_redirect
-			FROM {$favoritelist} LEFT JOIN {$page} ON ( fl_namespace = page_namespace
-			AND fl_title = page_title ) WHERE fl_user = {$uid}";
-		$res = $dbr->query( $sql, __METHOD__ );
+
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'fl_namespace', 'fl_title', 'page_id', 'page_len', 'page_is_redirect' ] )
+			->from( 'favoritelist' )
+			->leftJoin( 'page', null, 'fl_namespace = page_namespace AND fl_title = page_title' )
+			->where( [ 'fl_user' => $uid ] )
+			->fetchResultSet();
+
 		if ( $res->numRows() > 0 ) {
 			$cache = MediaWikiServices::getInstance()->getLinkCache();
 			foreach ( $res as $row ) {
@@ -260,7 +263,7 @@ class FavoritelistEditor {
 	 * @param User $user
 	 */
 	private function clearFavoritelist( $user ) {
-		$dbw = wfGetDB( DB_PRIMARY );
+		$dbw = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$dbw->delete( 'favoritelist', [ 'fl_user' => $user->getId() ], __METHOD__ );
 	}
 
@@ -274,7 +277,7 @@ class FavoritelistEditor {
 	 * @param User $user
 	 */
 	private function favoriteTitles( $titles, $user ) {
-		$dbw = wfGetDB( DB_PRIMARY );
+		$dbw = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$rows = [];
 		foreach ( $titles as $title ) {
 			if ( !$title instanceof Title ) {
@@ -302,7 +305,7 @@ class FavoritelistEditor {
 	 * @param User $user
 	 */
 	private function unfavoriteTitles( $titles, $user ) {
-		$dbw = wfGetDB( DB_PRIMARY );
+		$dbw = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$hookContainer = MediaWikiServices::getInstance()->getHookContainer();
 		foreach ( $titles as $title ) {
 			if ( !$title instanceof Title ) {
