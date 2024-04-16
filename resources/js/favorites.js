@@ -1,6 +1,8 @@
 /**
  * Additional mw.Api methods to assist with (un)favoriting wiki pages.
  *
+ * @param mw
+ * @param $
  * @since 1.19
  */
 
