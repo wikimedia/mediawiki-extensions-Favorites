@@ -146,19 +146,19 @@
 
 				} )
 				.fail( function () {
-					let cleanTitle, msg, link;
+					let cleanTitle, msg, $titleLink;
 					// Reset link to non-loading mode
 					updateFavoriteLink( $link, action );
 
 					// Format error message
 					cleanTitle = title.replace( /_/g, ' ' );
-					link = mw.html.element(
-						'a', {
+					$titleLink = $( '<a>' )
+						.attr( {
 							href: mw.util.getUrl( title ),
 							title: cleanTitle
-						}, cleanTitle
-					);
-					msg = mw.message( 'favoriteerrortext', link );
+						} )
+						.text( cleanTitle );
+					msg = mw.message( 'favoriteerrortext', $titleLink );
 
 					// Report to user about the error
 					mw.notify( msg, { tag: 'favorite-self' } );
