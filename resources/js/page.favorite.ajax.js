@@ -99,7 +99,7 @@
 		updateFavoriteLink: updateFavoriteLink
 	};
 
-	$( function () {
+	$( () => {
 		let $links = $( '.mw-favoritelink a, a.mw-favoritelink, ' +
 			'#ca-favorite a, #ca-unfavorite a, #mw-unfavorite-link1, ' +
 			'#mw-unfavorite-link2, #mw-favorite-link2, #mw-favorite-link1' );
@@ -134,7 +134,7 @@
 
 			api[ action ]( title )
 
-				.done( function ( favoriteResponse ) {
+				.done( ( favoriteResponse ) => {
 
 					const otherAction = action === 'favorite' ? 'unfavorite' : 'favorite';
 					mw.notify( $.parseHTML( favoriteResponse.favorite.message ), {
@@ -145,7 +145,7 @@
 					updateFavoriteLink( $link, otherAction );
 
 				} )
-				.fail( function () {
+				.fail( () => {
 					let cleanTitle, msg, $titleLink;
 					// Reset link to non-loading mode
 					updateFavoriteLink( $link, action );
