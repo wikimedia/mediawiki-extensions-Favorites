@@ -4,7 +4,6 @@
 		<exclude name="Generic.CodeAnalysis.AssignmentInCondition.Found" />
 		<exclude name="Generic.Files.OneObjectStructurePerFile.MultipleFound" />
 		<exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment" />
-		<exclude name="MediaWiki.Usage.DbrQueryUsage.DbrQueryFound" />
 	</rule>
 
 	<rule ref="Generic.Files.LineLength">
