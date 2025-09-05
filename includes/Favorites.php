@@ -30,7 +30,9 @@ class Favorites {
 		} else {
 			return false;
 		}
+
 		$mode = $this->inFavorites( $ns, $titleKey ) ? 'unfavorite' : 'favorite';
+
 		if ( $wgUseIconFavorite ) {
 			$class = 'icon ';
 			$place = 'views';
@@ -58,15 +60,15 @@ class Favorites {
 		// );
 
 		$links[$place][$mode] = [
-				'class' => $class,
-				'text' => $text,
-				// uses 'favorite' or 'unfavorite' message
-				// 'href' => $this->getTitle()->getLocalURL( array( 'action' => $mode) )
-				// 'href' => $favTitle->getLocalUrl( 'action=' . $mode )
-				'href' => $title->getLocalURL( [
-						'action' => $mode,
-						'token' => $token
-				] )
+			'class' => $class,
+			'text' => $text,
+			// uses 'favorite' or 'unfavorite' message
+			// 'href' => $this->getTitle()->getLocalURL( array( 'action' => $mode) )
+			// 'href' => $favTitle->getLocalUrl( 'action=' . $mode )
+			'href' => $title->getLocalURL( [
+				'action' => $mode,
+				'token' => $token
+			] )
 		];
 
 		return false;
@@ -82,9 +84,9 @@ class Favorites {
 	private function inFavorites( $ns, $titleKey ) {
 		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_REPLICA );
 		$res = $dbr->select( 'favoritelist', 1, [
-				'fl_user' => $this->user->getId(),
-				'fl_namespace' => $ns,
-				'fl_title' => $titleKey
+			'fl_user' => $this->user->getId(),
+			'fl_namespace' => $ns,
+			'fl_title' => $titleKey
 		], __METHOD__ );
 		$isfavorited = $res->numRows() > 0;
 		return $isfavorited;
@@ -101,13 +103,13 @@ class Favorites {
 	 *        	Optionally override the action to 'unfavorite'
 	 * @return string Token
 	 */
-	private function getFavoriteToken( Title $title, User $user, $action = 'favorite' ) {
+	private function getFavoriteToken( $title, User $user, $action = 'favorite' ) {
 		if ( $action != 'unfavorite' ) {
 			$action = 'favorite';
 		}
 		$salt = [
-				$action,
-				$title->getDBkey()
+			$action,
+			$title->getDBkey()
 		];
 
 		// This token stronger salted and not compatible with ApiFavorite
@@ -126,7 +128,7 @@ class Favorites {
 	 *        	Optionally override the action to 'favorite'
 	 * @return string Token
 	 */
-	private function getUnfavoriteToken( Title $title, User $user, $action = 'unfavorite' ) {
+	private function getUnfavoriteToken( $title, User $user, $action = 'unfavorite' ) {
 		return self::getFavoriteToken( $title, $user, $action );
 	}
 
@@ -162,13 +164,14 @@ class Favorites {
 				'fl_namespace' => $oldnamespace,
 				'fl_title' => $oldtitle
 		], __METHOD__, 'FOR UPDATE' );
+
 		// Construct array to replace into the favoritelist
 		$values = [];
 		foreach ( $res as $s ) {
 			$values[] = [
-					'fl_user' => $s->fl_user,
-					'fl_namespace' => $newnamespace,
-					'fl_title' => $newtitle
+				'fl_user' => $s->fl_user,
+				'fl_namespace' => $newnamespace,
+				'fl_title' => $newtitle
 			];
 		}
 
@@ -182,9 +185,9 @@ class Favorites {
 		// some other DBMSes, mostly due to poor simulation by us
 		$dbw->replace( 'favoritelist', [
 				[
-						'fl_user',
-						'fl_namespace',
-						'fl_title'
+					'fl_user',
+					'fl_namespace',
+					'fl_title'
 				]
 		], $values, __METHOD__ );
 
@@ -192,6 +195,6 @@ class Favorites {
 		$dbw->delete( 'favoritelist', [
 				'fl_namespace' => $oldnamespace,
 				'fl_title' => $oldtitle
-		], 'Database::delete' );
+		], __METHOD__ );
 	}
 }

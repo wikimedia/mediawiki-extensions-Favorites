@@ -34,7 +34,7 @@ class FavoritelistEditor {
 				// The "Clear" link scared people too much.
 				// Pass on to the raw editor, from which it's very easy to clear.
 			case self::EDIT_RAW:
-				$output->setPageTitle( wfMessage( 'favoritelistedit-raw-title' ) );
+				$output->setPageTitle( wfMessage( 'favoritelistedit-raw-title' )->escaped() );
 				if ( $request->wasPosted() && $this->checkToken( $request, $user ) ) {
 					$wanted = $this->extractTitles( $request->getText( 'titles' ) );
 					$current = $this->getFavoritelist( $user );
@@ -48,11 +48,11 @@ class FavoritelistEditor {
 							$output->addHTML( wfMessage( 'favoritelistedit-raw-done' )->parse() );
 						}
 						if ( ( $count = count( $toFavorite ) ) > 0 ) {
-							$output->addHTML( wfMessage( 'favoritelistedit-raw-added', $count )->parse() );
+							$output->addHTML( '<br />' . wfMessage( 'favoritelistedit-raw-added', $count )->parse() );
 							$this->showTitles( $toFavorite, $output, $output->getSkin() );
 						}
 						if ( ( $count = count( $toUnfavorite ) ) > 0 ) {
-							$output->addHTML( wfMessage( 'favoritelistedit-raw-removed', $count )->parse() );
+							$output->addHTML( '<br />' . wfMessage( 'favoritelistedit-raw-removed', $count )->parse() );
 							$this->showTitles( $toUnfavorite, $output, $output->getSkin() );
 						}
 					} else {
@@ -65,13 +65,14 @@ class FavoritelistEditor {
 				$this->showRawForm( $output, $user );
 				break;
 			case self::EDIT_NORMAL:
-				$output->setPageTitle( wfMessage( 'favoritelistedit-normal-title' ) );
+				$output->setPageTitle( wfMessage( 'favoritelistedit-normal-title' )->escaped() );
 				if ( $request->wasPosted() && $this->checkToken( $request, $user ) ) {
 					$titles = $this->extractTitles( $request->getArray( 'titles' ) );
 					$this->unfavoriteTitles( $titles, $user );
 					$user->invalidateCache();
-					$output->addHTML( wfMessage( 'favoritelistedit-normal-done',
-						$GLOBALS['wgLang']->formatNum( count( $titles ) ) )->parse() );
+					$output->addHTML( wfMessage(
+							'favoritelistedit-normal-done'
+						)->numParams( count( $titles ) )->parse() );
 					$this->showTitles( $titles, $output, $output->getSkin() );
 				}
 				$this->showNormalForm( $output, $user );
@@ -98,12 +99,14 @@ class FavoritelistEditor {
 	 */
 	private function extractTitles( $list ) {
 		$titles = [];
+
 		if ( !is_array( $list ) ) {
 			$list = explode( "\n", trim( $list ) );
 			if ( !is_array( $list ) ) {
 				return [];
 			}
 		}
+
 		foreach ( $list as $text ) {
 			$text = trim( $text );
 			if ( strlen( $text ) > 0 ) {
@@ -112,6 +115,7 @@ class FavoritelistEditor {
 					$titles[] = $title->getPrefixedText();
 			}
 		}
+
 		return array_unique( $titles );
 	}
 
@@ -126,12 +130,16 @@ class FavoritelistEditor {
 	 */
 	private function showTitles( $titles, $output ) {
 		$talk = wfMessage( 'talkpagelinktext' )->text();
+
 		// Do a batch existence check
-		$batch = MediaWikiServices::getInstance()->getLinkBatchFactory()->newLinkBatch();
+		$services = MediaWikiServices::getInstance();
+		$batch = $services->getLinkBatchFactory()->newLinkBatch();
+
 		foreach ( $titles as $title ) {
 			if ( !$title instanceof Title ) {
 				$title = Title::newFromText( $title );
 			}
+
 			if ( $title instanceof Title ) {
 				$batch->addObj( $title );
 				// if ( $title->canHaveTalkPage() ) {
@@ -139,7 +147,9 @@ class FavoritelistEditor {
 				// }
 			}
 		}
+
 		$batch->execute();
+
 		// Print out the list
 		$output->addHTML( "<ul>\n" );
 		foreach ( $titles as $title ) {
@@ -147,8 +157,7 @@ class FavoritelistEditor {
 				$title = Title::newFromText( $title );
 			}
 			if ( $title instanceof Title ) {
-				$output->addHTML( "<li>" . MediaWikiServices::getInstance()
-					->getLinkRenderer()->makeLink( $title ) . "</li>\n" );
+				$output->addHTML( "<li>" . $services->getLinkRenderer()->makeLink( $title ) . "</li>\n" );
 			}
 		}
 		$output->addHTML( "</ul>\n" );
@@ -163,7 +172,8 @@ class FavoritelistEditor {
 	private function countFavoritelist( $user ) {
 		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$row = $dbr->selectRow(
-			'favoritelist', 'COUNT(*) AS count',
+			'favoritelist',
+			'COUNT(*) AS count',
 			[ 'fl_user' => $user->getId() ],
 			__METHOD__
 		);
@@ -200,46 +210,6 @@ class FavoritelistEditor {
 	}
 
 	/**
-	 * Get a list of titles on a user's favoritelist,
-	 * and return as a two-dimensional array with namespace, title and
-	 * redirect status
-	 *
-	 * @param User $user
-	 * @return array
-	 */
-	private function getFavoritelistInfo( $user ) {
-		$titles = [];
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
-		$uid = intval( $user->getId() );
-
-		$res = $dbr->newSelectQueryBuilder()
-			->select( [ 'fl_namespace', 'fl_title', 'page_id', 'page_len', 'page_is_redirect' ] )
-			->from( 'favoritelist' )
-			->leftJoin( 'page', null, 'fl_namespace = page_namespace AND fl_title = page_title' )
-			->where( [ 'fl_user' => $uid ] )
-			->fetchResultSet();
-
-		if ( $res->numRows() > 0 ) {
-			$cache = MediaWikiServices::getInstance()->getLinkCache();
-			foreach ( $res as $row ) {
-				$title = Title::makeTitleSafe( $row->fl_namespace, $row->fl_title );
-				if ( $title instanceof Title ) {
-					// Update the link cache while we're at it
-					if ( $row->page_id ) {
-						$cache->addGoodLinkObj( $row->page_id, $title, $row->page_len, $row->page_is_redirect );
-					} else {
-						$cache->addBadLinkObj( $title );
-					}
-					// Ignore non-talk
-					//if( !$title->isTalkPage() )
-						$titles[$row->fl_namespace][$row->fl_title] = $row->page_is_redirect;
-				}
-			}
-		}
-		return $titles;
-	}
-
-	/**
 	 * Show a message indicating the number of items on the user's favoritelist,
 	 * and return this count for additional checking
 	 *
@@ -249,8 +219,7 @@ class FavoritelistEditor {
 	 */
 	private function showItemCount( $output, $user ) {
 		if ( ( $count = $this->countFavoritelist( $user ) ) > 0 ) {
-			$output->addHTML( wfMessage( 'favoritelistedit-numitems',
-				$GLOBALS['wgLang']->formatNum( $count ) )->parse() );
+			$output->addHTML( wfMessage( 'favoritelistedit-numitems' )->numParams( $count )->parse() );
 		} else {
 			$output->addHTML( wfMessage( 'favoritelistedit-noitems' )->parse() );
 		}
@@ -286,7 +255,7 @@ class FavoritelistEditor {
 			if ( $title instanceof Title ) {
 				$rows[] = [
 					'fl_user' => $user->getId(),
-					'fl_namespace' => ( $title->getNamespace() | 1 ),
+					'fl_namespace' => $title->getNamespace(),
 					'fl_title' => $title->getDBkey(),
 					'fl_notificationtimestamp' => null,
 				];
@@ -305,20 +274,24 @@ class FavoritelistEditor {
 	 * @param User $user
 	 */
 	private function unfavoriteTitles( $titles, $user ) {
-		$dbw = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
-		$hookContainer = MediaWikiServices::getInstance()->getHookContainer();
+		$services = MediaWikiServices::getInstance();
+		$dbw = $services->getDBLoadBalancer()->getConnection( DB_PRIMARY );
+		$hookContainer = $services->getHookContainer();
+
 		foreach ( $titles as $title ) {
 			if ( !$title instanceof Title ) {
 				$title = Title::newFromText( $title );
 			}
+
 			if ( $title instanceof Title ) {
 				$dbw->delete(
 					'favoritelist',
 					[
 						'fl_user' => $user->getId(),
-						'fl_namespace' => ( $title->getNamespace() ),
+						'fl_namespace' => $title->getNamespace(),
 						'fl_title' => $title->getDBkey(),
-					]
+					],
+					__METHOD__
 				);
 				$article = new Article( $title );
 				$hookContainer->run( 'UnfavoriteArticleComplete', [ &$user, &$article ] );
@@ -338,7 +311,7 @@ class FavoritelistEditor {
 			$form  = Xml::openElement( 'form', [ 'method' => 'post',
 				'action' => $self->getLocalUrl( [ 'action' => 'edit' ] ) ] );
 			$form .= Html::hidden( 'token', $user->getEditToken( 'favoritelistedit' ) );
-			$form .= "<fieldset>\n<legend>" . wfMessage( 'favoritelistedit-normal-legend' )->text() . "</legend>";
+			$form .= "<fieldset>\n<legend>" . wfMessage( 'favoritelistedit-normal-legend' )->escaped() . "</legend>";
 			$form .= wfMessage( 'favoritelistedit-normal-explain' )->parse();
 			$form .= $this->buildRemoveList( $user, $output->getSkin() );
 			$form .= '<p>' . Xml::submitButton( wfMessage( 'favoritelistedit-normal-submit' ) ) . '</p>';
@@ -349,22 +322,25 @@ class FavoritelistEditor {
 
 	/**
 	 * Build the part of the standard favoritelist editing form with the actual
-	 * title selection checkboxes and stuff.  Also generates a table of
-	 * contents if there's more than one heading.
+	 * title selection checkboxes and stuff.
+	 * Also generates a table of contents if there's more than one heading.
 	 *
 	 * @param User $user
 	 * @return string
 	 */
 	private function buildRemoveList( $user ) {
-		$list = "";
+		$list = '';
 		$toc = Linker::tocIndent();
 		$tocLength = 0;
-		foreach ( $this->getFavoritelistInfo( $user ) as $namespace => $pages ) {
+
+		$favorites = FavoriteListInfo::getForUser( $user );
+
+		foreach ( $favorites as $namespace => $pages ) {
 			$tocLength++;
 			$heading = htmlspecialchars( $this->getNamespaceHeading( $namespace ) );
-			$anchor = "editfavoritelist-ns" . $namespace;
+			$anchor = 'editfavoritelist-ns' . $namespace;
 
-			$list .= Linker::makeHeadLine( 2, ">", $anchor, $heading, "" );
+			$list .= Linker::makeHeadLine( 2, '>', $anchor, $heading, '' );
 			$toc .= Linker::tocLine( $anchor, $heading, $tocLength, 1 ) . Linker::tocLineEnd();
 
 			$list .= "\n";
@@ -374,10 +350,12 @@ class FavoritelistEditor {
 			}
 			$list .= "\n";
 		}
+
 		// ISSUE: omit the TOC if the total number of titles is low?
 		if ( $tocLength > 1 ) {
 			$list = Linker::tocList( $toc ) . $list;
 		}
+
 		return $list;
 	}
 
@@ -404,10 +382,9 @@ class FavoritelistEditor {
 	 * @return string
 	 */
 	private function buildRemoveLine( $title, $redirect ) {
-		global $wgLang;
 		# In case the user adds something unusual to their list using the raw editor
 		# We moved the Tools array completely into the "if( $title->exists() )" section.
-		$showlinks = false;
+		$showLinks = false;
 		$linkRenderer = MediaWikiServices::getInstance()->getLinkRenderer();
 
 		$link = $linkRenderer->makeLink( $title );
@@ -415,7 +392,7 @@ class FavoritelistEditor {
 			$link = '<span class="favoritelistredir">' . $link . '</span>';
 		}
 		if ( $title->exists() ) {
-			$showlinks = true;
+			$showLinks = true;
 			// if ( $title->canHaveTalkPage() ) {
 			// 	$tools[] = Linker::link( $title->getTalkPage(), wfMessage( 'talkpagelinktext' )->text() );
 			// }
@@ -433,12 +410,12 @@ class FavoritelistEditor {
 			);
 		}
 
-		if ( $showlinks ) {
+		if ( $showLinks ) {
 			return Xml::check( 'titles[]', false, [ 'value' => $title->getPrefixedText() ] )
-			. $link . " (" . $wgLang->pipeList( $tools ) . ")" . "\n<br>";
+				. $link . " (" . RequestContext::getMain()->getLanguage()->pipeList( $tools ) . ")" . "\n<br>";
 		} else {
 			return Xml::check( 'titles[]', false, [ 'value' => $title->getPrefixedText() ] )
-			. $link . "\n<br>";
+				. $link . "\n<br>";
 		}
 	}
 
@@ -456,6 +433,7 @@ class FavoritelistEditor {
 		$form .= Html::hidden( 'token', $user->getEditToken( 'favoritelistedit' ) );
 		$form .= '<fieldset><legend>' . wfMessage( 'favoritelistedit-raw-legend' )->text() . '</legend>';
 		$form .= wfMessage( 'favoritelistedit-raw-explain' )->parse();
+		$form .= "<br /><br />\n";
 		$form .= Xml::label( wfMessage( 'favoritelistedit-raw-titles' ), 'titles' );
 		$form .= "<br />\n";
 		$form .= Xml::openElement( 'textarea', [ 'id' => 'titles', 'name' => 'titles',
@@ -499,10 +477,12 @@ class FavoritelistEditor {
 	 * @return string
 	 */
 	public static function buildTools() {
-		global $wgLang;
-
 		$tools = [];
-		$modes = [ 'view' => false, 'edit' => 'edit', 'raw' => 'raw' ];
+		$modes = [
+			'view' => false,
+			'edit' => 'edit',
+			'raw' => 'raw'
+		];
 		foreach ( $modes as $mode => $subpage ) {
 			// can use messages 'favoritelisttools-view', 'favoritelisttools-edit', 'favoritelisttools-raw'
 			$tools[] = MediaWikiServices::getInstance()->getLinkRenderer()->makeKnownLink(
@@ -510,6 +490,6 @@ class FavoritelistEditor {
 				wfMessage( "favoritelisttools-{$mode}" )->text()
 			);
 		}
-		return $wgLang->pipeList( $tools );
+		return RequestContext::getMain()->getLanguage()->pipeList( $tools );
 	}
 }

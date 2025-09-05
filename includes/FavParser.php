@@ -69,11 +69,11 @@ class FavParser {
 		$output = '';
 		if ( array_key_exists( 'editlink', $argv ) && $argv['editlink'] ) {
 			# Add an edit link if you want it:
-			$output = "<div id='contentSub'><br>" .
+			$output = '<div id="contentSub"><br>' .
 				MediaWikiServices::getInstance()->getLinkRenderer()->makeLink(
 					SpecialPage::getTitleFor( 'Favoritelist', 'edit' ),
-					wfMessage( "favoritelisttools-edit" )->text()
-				) . "</div>";
+					wfMessage( 'favoritelisttools-edit' )->text()
+				) . '</div>';
 		}
 		return $output;
 	}
@@ -85,51 +85,9 @@ class FavParser {
 	 * @return int
 	 */
 	private function countFavoritelist( $user ) {
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_REPLICA );
-
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$row = $dbr->selectRow( 'favoritelist', 'COUNT(fl_user) AS count', [ 'fl_user' => $user->getId() ], __METHOD__ );
 		return ceil( $row->count );
-	}
-
-	/**
-	 * Get a list of titles on a user's favoritelist, excluding talk pages,
-	 * and return as a two-dimensional array with namespace, title and
-	 * redirect status
-	 *
-	 * @param UserIdentity $user
-	 * @return array
-	 */
-	private function getFavoritelistInfo( $user ) {
-		$titles = [];
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
-		$uid = intval( $user->getId() );
-
-		$res = $dbr->newSelectQueryBuilder()
-			->select( [ 'fl_namespace', 'fl_title', 'page_id', 'page_len', 'page_is_redirect' ] )
-			->from( 'favoritelist' )
-			->leftJoin( 'page', null, 'fl_namespace = page_namespace AND fl_title = page_title' )
-			->where( [ 'fl_user' => $uid ] )
-			->fetchResultSet();
-
-		if ( $res->numRows() > 0 ) {
-			$cache = MediaWikiServices::getInstance()->getLinkCache();
-			foreach ( $res as $row ) {
-				$title = Title::makeTitleSafe( $row->fl_namespace, $row->fl_title );
-				if ( $title instanceof Title ) {
-					// Update the link cache while we're at it
-					if ( $row->page_id ) {
-						$cache->addGoodLinkObj( $row->page_id, $title, $row->page_len, $row->page_is_redirect );
-					} else {
-						$cache->addBadLinkObj( $title );
-					}
-					// Ignore non-talk
-					if ( !$title->isTalkPage() ) {
-						$titles[$row->fl_namespace][$row->fl_title] = $row->page_is_redirect;
-					}
-				}
-			}
-		}
-		return $titles;
 	}
 
 	/**
@@ -145,7 +103,7 @@ class FavParser {
 			$output .= $form;
 			return $output;
 		} else {
-			return wfMessage( 'nofavoritelist' )->text();
+			return wfMessage( 'nofavoritelist' )->escaped();
 		}
 	}
 
@@ -156,9 +114,10 @@ class FavParser {
 	 * @return string
 	 */
 	private function buildRemoveList( $user ) {
-		$list = "";
+		$list = '';
 		$list .= "<ul>\n";
-		foreach ( $this->getFavoritelistInfo( $user ) as $namespace => $pages ) {
+		$favorites = FavoriteListInfo::getForUser( $user, [ 'ignoreTalkNS' => true ] );
+		foreach ( $favorites as $namespace => $pages ) {
 			foreach ( $pages as $dbkey => $redirect ) {
 				$title = Title::makeTitleSafe( $namespace, $dbkey );
 				$list .= $this->buildRemoveLine( $title, $redirect );

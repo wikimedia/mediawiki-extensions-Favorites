@@ -12,7 +12,7 @@ $specialPageAliases = [];
  * @author Jeremy Lemley
  */
 $specialPageAliases['en'] = [
-	'Favoritelist' => [ 'Favoritelist', 'My Favorites' ],
+	'Favoritelist' => [ 'FavoriteList', 'My Favorites' ],
 ];
 
 /** German
@@ -20,4 +20,11 @@ $specialPageAliases['en'] = [
  */
 $specialPageAliases['de'] = [
 	'Favoritelist' => [ 'FavoritenListe', 'Favoriten' ],
+];
+
+/** Finnish (suomi)
+ * @author Jack Phoenix
+ */
+$specialPageAliases['fi'] = [
+	'Favoritelist' => [ 'Suosikit' ]
 ];

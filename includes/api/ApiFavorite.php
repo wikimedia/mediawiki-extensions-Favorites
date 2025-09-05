@@ -1,10 +1,12 @@
 <?php
-
 /**
  * API module to allow users to favorite a page
  *
  * @ingroup API
  */
+
+use MediaWiki\MediaWikiServices;
+
 class ApiFavorite extends ApiBase {
 
 	/**
@@ -18,32 +20,35 @@ class ApiFavorite extends ApiBase {
 	public function execute() {
 		$user = $this->getUser();
 		if ( !$user->isRegistered() ) {
-			$this->dieUsage( 'You must be logged-in to have a favoritelist', 'notloggedin' );
+			$this->dieWithError( 'api-error-favorites-not-logged-in', 'notloggedin' );
 		}
 
 		$params = $this->extractRequestParams();
 		$title = Title::newFromText( $params['title'] );
 
 		if ( !$title || $title->getNamespace() < 0 ) {
-			$this->dieUsageMsg( [ 'invalidtitle', $params['title'] ] );
+			$this->dieWithError( [ 'invalidtitle', $params['title'] ] );
 		}
 
 		$res = [ 'title' => $title->getPrefixedText() ];
 
+		$dbw = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
+
 		if ( $params['unfavorite'] ) {
 			$res['unfavorited'] = '';
 			$res['message'] = $this->msg( 'removedfavoritetext', $title->getPrefixedText() )->title( $title )->parseAsBlock();
-			$success = false;
-			// $success = UnfavoriteAction::doUnfavorite( $title, $user );
+			$success = UnfavoriteAction::doAction( $dbw, $title->getNamespace(), $user, $title );
 		} else {
 			$res['favorited'] = '';
 			$res['message'] = $this->msg( 'addedfavoritetext', $title->getPrefixedText() )->title( $title )->parseAsBlock();
-			$success = false;
-			// $success = FavAction::doFavorite( $title, $user );
+			$success = FavoriteAction::doAction( $dbw, $title->getNamespace(), $user, $title );
 		}
+
+		// @todo FIXME: ...this is so confusing. WHY would you use that message???
 		if ( !$success ) {
-			$this->dieUsageMsg( 'hookaborted' );
+			$this->dieWithError( 'hookaborted', 'hookaborted' );
 		}
+
 		$this->getResult()->addValue( null, $this->getModuleName(), $res );
 	}
 
@@ -54,21 +59,15 @@ class ApiFavorite extends ApiBase {
 		return true;
 	}
 
-	/**
-	 * @return bool
-	 */
+	/** @inheritDoc */
 	public function isWriteMode() {
 		return true;
 	}
 
-	// since this makes changes the database, we should use this, but I just can't get it to work.
-	//public function needsToken() {
-	//	return 'favorite';
-	//}
-
-	//public function getTokenSalt() {
-	//	return 'favorite';
-	//}
+	/** @inheritDoc */
+	public function needsToken() {
+		return 'csrf';
+	}
 
 	/**
 	 * @inheritDoc
@@ -79,11 +78,7 @@ class ApiFavorite extends ApiBase {
 				ApiBase::PARAM_TYPE => 'string',
 				ApiBase::PARAM_REQUIRED => true
 			],
-			'unfavorite' => false,
-			// 'token' => array(
-			//	ApiBase::PARAM_TYPE => 'string',
-			//	ApiBase::PARAM_REQUIRED => true
-			//),
+			'unfavorite' => false
 		];
 	}
 

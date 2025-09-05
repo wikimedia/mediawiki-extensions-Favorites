@@ -1,8 +1,6 @@
 /**
  * Additional mw.Api methods to assist with (un)favoriting wiki pages.
  *
- * @param mw
- * @param $
  * @since 1.19
  */
 
@@ -20,7 +18,7 @@
 		const params = {
 			action: 'favorite',
 			title: String( page ),
-			token: mw.user.tokens.get( 'favorite' ),
+			token: mw.user.tokens.get( 'csrfToken' ),
 			uselang: mw.config.get( 'wgUserLanguage' )
 		};
 		// eslint-disable-next-line no-unused-vars

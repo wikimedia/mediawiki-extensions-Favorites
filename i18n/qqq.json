@@ -48,6 +48,7 @@
 	"favoritelisttools-view": "View favorites page listing on favorites special pages",
 	"favoritelisttools-edit": "View and edit favorites page listing on favorites special pages",
 	"favoritelisttools-raw": "Edit raw favorites list page listing on favorites special pages",
+	"api-error-favorites-not-logged-in": "Error message returned by the API when an anonymous user tries to use the favorites API module",
 	"apihelp-favorite-summary": "{{doc-apihelp-summary|favorite}}",
 	"apihelp-favorite-param-title": "{{doc-apihelp-param|favorite|title}}",
 	"apihelp-favorite-param-unfavorite": "{{doc-apihelp-param|favorite|unfavorite}}",

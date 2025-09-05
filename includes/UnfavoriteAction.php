@@ -22,7 +22,7 @@ class UnfavoriteAction extends BaseAction {
 	 * @param Title $title
 	 * @return bool
 	 */
-	protected function doAction(
+	public function doAction(
 		\Wikimedia\Rdbms\DBConnRef $dbw, int $subject, User $user, Title $title
 	) {
 		$dbw->delete( 'favoritelist', [

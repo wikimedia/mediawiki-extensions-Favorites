@@ -6,15 +6,24 @@ use MediaWiki\MediaWikiServices;
 
 class FavoritesHooks {
 	/**
+	 * Adds the extension's JS and CSS assets on all page loads for registered users and
+	 * only when the namespace index is 0 (NS_MAIN) or greater, i.e. skips NS_SPECIAL.
+	 *
 	 * @param OutputPage &$out
 	 * @param Skin &$skin
 	 */
 	public static function onBeforePageDisplay( OutputPage &$out, Skin &$skin ) {
-		$out->addModules( 'ext.favorites' );
-		$out->addModules( 'ext.favorites.style' );
+		if ( $out->getUser()->isRegistered() && $out->getTitle()->getNamespace() <= 0 ) {
+			$out->addModules( [
+				'ext.favorites',
+				'ext.favorites.style'
+			] );
+		}
 	}
 
 	/**
+	 * Register the <favorites> hook with the Parser.
+	 *
 	 * @param Parser &$parser
 	 */
 	public static function onParserFirstCallInit( Parser &$parser ) {
@@ -22,17 +31,14 @@ class FavoritesHooks {
 	}
 
 	/**
+	 * Callback for the <favorites> hook registered in onParserFirstCallInit().
+	 *
 	 * @param string $input
 	 * @param array $argv
 	 * @param Parser $parser
 	 * @return string
 	 */
 	public static function renderFavorites( $input, $argv, $parser ) {
-		# The parser function itself
-		# The input parameters are wikitext with templates expanded
-		# The output should be wikitext too
-		//$output = "Parser Output goes here.";
-
 		$favParse = new FavParser();
 		$output = $favParse->wfSpecialFavoritelist( $argv, $parser );
 		$parser->getOutput()->updateCacheExpiry( 0 );
@@ -46,51 +52,81 @@ class FavoritesHooks {
 	 * @param DatabaseUpdater $updater
 	 */
 	public static function onLoadExtensionSchemaUpdates( DatabaseUpdater $updater ) {
-		$file = __DIR__ . '/../sql/favorites.sql';
-		$updater->addExtensionTable( 'favoritelist', $file );
+		$file = 'favorites.sql';
+		if ( $updater->getDB()->getType() === 'postgres' ) {
+			$file = 'favorites.postgres.sql';
+		}
+		$updater->addExtensionTable( 'favoritelist', __DIR__ . '/../sql/' . $file );
 	}
 
 	/**
-	 * @param Title &$title
-	 * @param Title &$nt
-	 * @param User $user
-	 * @param int $pageid
-	 * @param int $redirid
-	 * @return bool
+	 * Update favoritelists after a page has been moved.
+	 *
+	 * @param MediaWiki\Linker\LinkTarget $title Old page title
+	 * @param MediaWiki\Linker\LinkTarget $nt New page title
+	 * @param MediaWiki\User\UserIdentity $userIdentity User who did the move [unused]
+	 * @param int $pageId ID of the impacted page [unused]
+	 * @param int $redirId
+	 * @param string $reason User-supplied reason for the page move [unused]
+	 * @param MediaWiki\Revision\RevisionRecord $revision [unused]
 	 */
-	public static function onTitleMoveComplete( &$title, &$nt, $user, $pageid, $redirid ) {
-		# Update watchlists
-		$oldnamespace = $title->getNamespace() & ~1;
-		$newnamespace = $nt->getNamespace() & ~1;
-		$oldtitle = $title->getDBkey();
-		$newtitle = $nt->getDBkey();
+	public static function onPageMoveComplete(
+		MediaWiki\Linker\LinkTarget $title,
+		MediaWiki\Linker\LinkTarget $nt,
+		MediaWiki\User\UserIdentity $userIdentity,
+		int $pageId,
+		int $redirId,
+		string $reason,
+		MediaWiki\Revision\RevisionRecord $revision
+	) {
+		$oldNamespace = $title->getNamespace() & ~1;
+		$newNamespace = $nt->getNamespace() & ~1;
+		$oldTitle = $title->getDBkey();
+		$newTitle = $nt->getDBkey();
 
-		if ( $oldnamespace != $newnamespace || $oldtitle != $newtitle ) {
+		if ( $oldNamespace != $newNamespace || $oldTitle != $newTitle ) {
 			Favorites::duplicateEntries( $title, $nt );
 		}
-		return true;
 	}
 
 	/**
-	 * @param WikiPage &$article
-	 * @param User &$user
-	 * @param string $reason
-	 * @param int $id
-	 * @return bool
+	 * Delete favorite list entries for a page when said page gets deleted.
+	 *
+	 * @param MediaWiki\Page\ProperPageIdentity $page The page that was deleted
+	 * @param MediaWiki\Permissions\Authority $deleter The user who deleted the page [unused]
+	 * @param string $reason User-supplied reason for page deletion [unused]
+	 * @param int $pageID ID of the deleted page [unused]
+	 * @param MediaWiki\Revision\RevisionRecord $deletedRev [unused]
+	 * @param ManualLogEntry $logEntry [unused]
+	 * @param int $archivedRevisionCount [unused]
 	 */
-	public static function onArticleDeleteComplete( &$article, &$user, $reason, $id ) {
-		$dbw = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
-		$dbw->delete( 'favoritelist', [
-				'fl_namespace' => $article->getTitle()->getNamespace(),
-				'fl_title' => $article->getTitle()->getDBKey() ],
-				__METHOD__ );
-		return true;
+	public static function onPageDeleteComplete(
+		MediaWiki\Page\ProperPageIdentity $page,
+		MediaWiki\Permissions\Authority $deleter,
+		string $reason,
+		int $pageID,
+		MediaWiki\Revision\RevisionRecord $deletedRev,
+		ManualLogEntry $logEntry,
+		int $archivedRevisionCount
+	) {
+		$services = MediaWikiServices::getInstance();
+		$dbw = $services->getDBLoadBalancer()->getConnection( DB_PRIMARY );
+		$title = $services->getTitleFactory()->newFromPageIdentity( $page );
+		$dbw->delete(
+			'favoritelist',
+			[
+				'fl_namespace' => $title->getNamespace(),
+				'fl_title' => $title->getDBkey()
+			],
+			__METHOD__
+		);
 	}
 
 	/**
+	 * Add the "My favorites" menu item to the personal tools if enabled in config.
+	 *
 	 * @param SkinTemplate $sktemplate
 	 * @param array &$links
-	 * @return bool
 	 */
 	public static function onSkinTemplateNavigation__Universal( $sktemplate, &$links ) {
 		global $wgFavoritesPersonalURL;
@@ -106,7 +142,5 @@ class FavoritesHooks {
 
 		$favClass = new Favorites;
 		$favClass->favoritesLinks( $sktemplate, $links );
-
-		return true;
 	}
 }

@@ -8,12 +8,10 @@ abstract class BaseAction extends Action {
 		$user = $this->getUser();
 		$out = $this->getOutput();
 
-		$dbw = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
+		$services = MediaWikiServices::getInstance();
+		$dbw = $services->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$title = $this->getTitle();
-		$subject =
-			MediaWikiServices::getInstance()
-				->getNamespaceInfo()
-				->getSubject( $title->getNamespace() );
+		$subject = $services->getNamespaceInfo()->getSubject( $title->getNamespace() );
 
 		if ( $this->doAction( $dbw, $subject, $user, $title ) ) {
 			$out->addWikiMsg( $this->successMessage(), $title->getPrefixedText() );
@@ -32,5 +30,5 @@ abstract class BaseAction extends Action {
 	 * @param Title $title
 	 * @return bool
 	 */
-	abstract protected function doAction( DBConnRef $dbw, int $subject, User $user, Title $title );
+	abstract public function doAction( DBConnRef $dbw, int $subject, User $user, Title $title );
 }

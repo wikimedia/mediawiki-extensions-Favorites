@@ -133,9 +133,7 @@
 			api = new mw.Api();
 
 			api[ action ]( title )
-
 				.done( ( favoriteResponse ) => {
-
 					const otherAction = action === 'favorite' ? 'unfavorite' : 'favorite';
 					mw.notify( $.parseHTML( favoriteResponse.favorite.message ), {
 						tag: 'favorite-self'
@@ -143,25 +141,30 @@
 
 					// Set link to opposite
 					updateFavoriteLink( $link, otherAction );
-
 				} )
-				.fail( () => {
-					let cleanTitle, msg, $titleLink;
+				.fail( ( code, data ) => {
+					// let cleanTitle, msg, link;
 					// Reset link to non-loading mode
 					updateFavoriteLink( $link, action );
 
 					// Format error message
+					let $msg = api.getErrorMessage( data );
+
+					/*
 					cleanTitle = title.replace( /_/g, ' ' );
-					$titleLink = $( '<a>' )
-						.attr( {
+					link = mw.html.element(
+						'a', {
 							href: mw.util.getUrl( title ),
 							title: cleanTitle
-						} )
-						.text( cleanTitle );
-					msg = mw.message( 'favoriteerrortext', $titleLink );
+						}, cleanTitle
+					);
+					// @todo FIXME: HTML isn't being parsed as such, even if you'd add .text()
+					// here or use $.parseHTML as above...weeeeeeeird.
+					msg = mw.message( 'favoriteerrortext', link ).parseDom();
+					*/
 
 					// Report to user about the error
-					mw.notify( msg, { tag: 'favorite-self' } );
+					mw.notify( $msg, { tag: 'favorite-self' } );
 				} );
 		} );
 	} );

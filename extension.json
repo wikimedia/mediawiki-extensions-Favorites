@@ -1,12 +1,15 @@
 {
 	"name": "Favorites",
-	"version": "1.1.3",
-	"author": "Jeremy Lemley",
+	"version": "1.2",
+	"author": [
+		"Jeremy Lemley",
+		"..."
+	],
 	"url": "https://www.mediawiki.org/wiki/Extension:Favorites",
 	"descriptionmsg": "favorites-desc",
 	"type": "specialpage",
 	"requires": {
-		"MediaWiki": ">= 1.36.0"
+		"MediaWiki": ">= 1.39.0"
 	},
 	"APIModules": {
 		"favorite": "ApiFavorite"
@@ -28,6 +31,7 @@
 	},
 	"AutoloadClasses": {
 		"Favorites": "includes/Favorites.php",
+		"FavoriteListInfo": "includes/FavoriteListInfo.php",
 		"BaseAction": "includes/BaseAction.php",
 		"FavoriteAction": "includes/FavoriteAction.php",
 		"UnfavoriteAction": "includes/UnfavoriteAction.php",
@@ -64,8 +68,7 @@
 			]
 		},
 		"ext.favorites.style": {
-			"styles": "css/favorites.css",
-			"position": "top"
+			"styles": "css/favorites.css"
 		}
 	},
 	"ResourceFileModulePaths": {
@@ -75,16 +78,18 @@
 	"Hooks": {
 		"BeforePageDisplay": "FavoritesHooks::onBeforePageDisplay",
 		"ParserFirstCallInit": "FavoritesHooks::onParserFirstCallInit",
-		"TitleMoveComplete": "FavoritesHooks::onTitleMoveComplete",
-		"ArticleDeleteComplete": "FavoritesHooks::onArticleDeleteComplete",
+		"PageMoveComplete": "FavoritesHooks::onPageMoveComplete",
+		"PageDeleteComplete": "FavoritesHooks::onPageDeleteComplete",
 		"SkinTemplateNavigation::Universal": "FavoritesHooks::onSkinTemplateNavigation__Universal",
 		"LoadExtensionSchemaUpdates": "FavoritesHooks::onLoadExtensionSchemaUpdates"
 	},
 	"config": {
 		"FavoritesPersonalURL": {
+			"description": "Add a link to \"My Favorites\" to the Personal URLs section, next to \"My Watchlist\"?",
 			"value": false
 		},
 		"UseIconFavorite": {
+			"description": "Use the same star icon for the favorite list as the (original) Vector skin does?",
 			"value": false
 		}
 	},
