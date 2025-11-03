@@ -4,7 +4,10 @@
  * @ingroup SpecialPage Favoritelist
  */
 
+use MediaWiki\Html\Html;
+use MediaWiki\Linker\Linker;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 
 class SpecialFavoritelist extends SpecialPage {
 
