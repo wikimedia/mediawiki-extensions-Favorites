@@ -45,20 +45,6 @@ class Favorites {
 
 		$token = $this->getFavoriteToken( $title, $user, $mode );
 
-		// from streams:
-		// $fields .= Xml::input ( 'touserid', false, false, array (
-		// 'type' => 'text',
-		// 'id' => 'touserid',
-		// 'placeholder' => wfMessage ( 'streams-push-placeholder' )->plain ()
-		// ) );
-		// $fields .= "<a href='javascript:streamsPush.check_empty()' id='submit' >" . wfMessage ( 'streams-push-send' )->plain () . "</a>";
-		// $formAttribs = array (
-		// 'action' => 'javascript:streamsPush.check_empty();',
-		// 'id' => 'form',
-		// 'method' => 'post',
-		// 'name' => 'pushform'
-		// );
-
 		$links[$place][$mode] = [
 			'class' => $class,
 			'text' => $text,
