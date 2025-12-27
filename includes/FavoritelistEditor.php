@@ -317,7 +317,7 @@ class FavoritelistEditor {
 			$form .= "<fieldset>\n<legend>" . wfMessage( 'favoritelistedit-normal-legend' )->escaped() . "</legend>";
 			$form .= wfMessage( 'favoritelistedit-normal-explain' )->parse();
 			$form .= $this->buildRemoveList( $user, $output->getSkin() );
-			$form .= '<p>' . Xml::submitButton( wfMessage( 'favoritelistedit-normal-submit' ) ) . '</p>';
+			$form .= '<p>' . Html::submitButton( wfMessage( 'favoritelistedit-normal-submit' ), [] ) . '</p>';
 			$form .= '</fieldset></form>';
 			$output->addHTML( $form );
 		}
@@ -414,10 +414,10 @@ class FavoritelistEditor {
 		}
 
 		if ( $showLinks ) {
-			return Xml::check( 'titles[]', false, [ 'value' => $title->getPrefixedText() ] )
+			return Html::check( 'titles[]', false, [ 'value' => $title->getPrefixedText() ] )
 				. $link . " (" . RequestContext::getMain()->getLanguage()->pipeList( $tools ) . ")" . "\n<br>";
 		} else {
-			return Xml::check( 'titles[]', false, [ 'value' => $title->getPrefixedText() ] )
+			return Html::check( 'titles[]', false, [ 'value' => $title->getPrefixedText() ] )
 				. $link . "\n<br>";
 		}
 	}
@@ -446,7 +446,7 @@ class FavoritelistEditor {
 			$form .= htmlspecialchars( $title ) . "\n";
 		}
 		$form .= '</textarea>';
-		$form .= '<p>' . Xml::submitButton( wfMessage( 'favoritelistedit-raw-submit' ) ) . '</p>';
+		$form .= '<p>' . Html::submitButton( wfMessage( 'favoritelistedit-raw-submit' ), [] ) . '</p>';
 		$form .= '</fieldset></form>';
 		$output->addHTML( $form );
 	}
