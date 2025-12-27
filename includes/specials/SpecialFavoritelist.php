@@ -315,7 +315,7 @@ class ViewFavorites {
 	private function showNormalForm( $output, $user ) {
 		if ( ( $count = $this->countFavoritelist( $user ) ) > 0 ) {
 			$self = SpecialPage::getTitleFor( 'Favoritelist' );
-			$form = Xml::openElement( 'form', [
+			$form = Html::openElement( 'form', [
 					'method' => 'post',
 					'action' => $self->getLocalUrl( [
 							'action' => 'edit'

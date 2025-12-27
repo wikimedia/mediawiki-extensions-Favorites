@@ -311,7 +311,7 @@ class FavoritelistEditor {
 	private function showNormalForm( $output, $user ) {
 		if ( $this->showItemCount( $output, $user ) > 0 ) {
 			$self = SpecialPage::getTitleFor( 'Favoritelist' );
-			$form  = Xml::openElement( 'form', [ 'method' => 'post',
+			$form  = Html::openElement( 'form', [ 'method' => 'post',
 				'action' => $self->getLocalUrl( [ 'action' => 'edit' ] ) ] );
 			$form .= Html::hidden( 'token', $user->getEditToken( 'favoritelistedit' ) );
 			$form .= "<fieldset>\n<legend>" . wfMessage( 'favoritelistedit-normal-legend' )->escaped() . "</legend>";
@@ -431,15 +431,15 @@ class FavoritelistEditor {
 	public function showRawForm( $output, $user ) {
 		$this->showItemCount( $output, $user );
 		$self = SpecialPage::getTitleFor( 'Favoritelist' );
-		$form  = Xml::openElement( 'form', [ 'method' => 'post',
+		$form  = Html::openElement( 'form', [ 'method' => 'post',
 			'action' => $self->getLocalUrl( [ 'action' => 'raw' ] ) ] );
 		$form .= Html::hidden( 'token', $user->getEditToken( 'favoritelistedit' ) );
 		$form .= '<fieldset><legend>' . wfMessage( 'favoritelistedit-raw-legend' )->text() . '</legend>';
 		$form .= wfMessage( 'favoritelistedit-raw-explain' )->parse();
 		$form .= "<br /><br />\n";
-		$form .= Xml::label( wfMessage( 'favoritelistedit-raw-titles' ), 'titles' );
+		$form .= Html::label( wfMessage( 'favoritelistedit-raw-titles' ), 'titles' );
 		$form .= "<br />\n";
-		$form .= Xml::openElement( 'textarea', [ 'id' => 'titles', 'name' => 'titles',
+		$form .= Html::openElement( 'textarea', [ 'id' => 'titles', 'name' => 'titles',
 			'rows' => 25, 'cols' => 80 ] );
 		$titles = $this->getFavoritelist( $user );
 		foreach ( $titles as $title ) {
