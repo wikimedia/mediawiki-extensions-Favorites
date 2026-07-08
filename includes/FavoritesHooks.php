@@ -3,6 +3,7 @@
 // phpcs:disable MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName
 
 use MediaWiki\MediaWikiServices;
+use Wikimedia\ArrayUtils\ArrayUtils;
 
 class FavoritesHooks {
 	/**
@@ -137,7 +138,12 @@ class FavoritesHooks {
 				'text' => $sktemplate->msg( 'myfavoritelist' )->text(),
 				'href' => SpecialPage::getTitleFor( 'Favoritelist' )->getLocalURL()
 			];
-			$personal_urls = wfArrayInsertAfter( $personal_urls, $url, 'watchlist' );
+			if ( method_exists( ArrayUtils::class, 'insertAfter' ) ) {
+				// MW 1.46+
+				$personal_urls = ArrayUtils::insertAfter( $personal_urls, $url, 'watchlist' );
+			} else {
+				$personal_urls = wfArrayInsertAfter( $personal_urls, $url, 'watchlist' );
+			}
 		}
 
 		$favClass = new Favorites;
